@@ -64,6 +64,22 @@ jobs:
               EXCLUDE: ${{ vars.EXCLUDE }}
               FAIL_ON_SCAN_ERROR: ${{ vars.FAIL_ON_SCAN_ERROR }}
               WAIT_FOR_RESULT: ${{ vars.WAIT_FOR_RESULT }}
+
+#      Checkout the repository to download the scan result in your repository.
+#      if repository is private then add PAT (personal access token) token in the checkout step.:
+          - name: checkout code
+            uses: actions/checkout@v3
+            with:
+             repository: GITHUB_USERNAME/REPOSITORY_NAME
+             ref: BRANCH_NAME
+             path: ./
+             PAT: ${{ secrets.ACCESS_TOKEN }}
+
+          - name: Download Result
+            uses: actions/download-artifact@v3
+            with:
+             name: Qualys_WAS_Scan_Result
+             path: PATH_TO_TARGET_DIRECTORY 
 ```
 
 ### Scan Web App in your repository on pull request event
@@ -113,6 +129,22 @@ jobs:
           EXCLUDE: ${{ vars.EXCLUDE }}
           FAIL_ON_SCAN_ERROR: ${{ vars.FAIL_ON_SCAN_ERROR }}
           WAIT_FOR_RESULT: ${{ vars.WAIT_FOR_RESULT }}
+
+#      Checkout the repository to download the scan result in your repository.
+#      if repository is private then add PAT (personal access token) token in the checkout step.:
+      - name: checkout code
+        uses: actions/checkout@v3
+        with:
+           repository: GITHUB_USERNAME/REPOSITORY_NAME
+           ref: BRANCH_NAME
+           path: ./
+           PAT: ${{ secrets.ACCESS_TOKEN }}
+
+      - name: Download Result
+        uses: actions/download-artifact@v3
+        with:
+           name: Qualys_WAS_Scan_Result
+           path: PATH_TO_TARGET_DIRECTORY
 ```
 
 ### Scan Web App in your repository on manual trigger
@@ -159,6 +191,22 @@ jobs:
           EXCLUDE: ${{ vars.EXCLUDE }}
           FAIL_ON_SCAN_ERROR: ${{ vars.FAIL_ON_SCAN_ERROR }}
           WAIT_FOR_RESULT: ${{ vars.WAIT_FOR_RESULT }}
+          
+#      Checkout the repository to download the scan result in your repository.
+#      if repository is private then add PAT (personal access token) token in the checkout step.:
+      - name: checkout code
+        uses: actions/checkout@v3
+        with:
+           repository: GITHUB_USERNAME/REPOSITORY_NAME
+           ref: BRANCH_NAME
+           path: ./
+           PAT: ${{ secrets.ACCESS_TOKEN }}
+
+      - name: Download Result
+        uses: actions/download-artifact@v3
+        with:
+           name: Qualys_WAS_Scan_Result
+           path: PATH_TO_TARGET_DIRECTORY
 ```
 
 ## Prerequisites for Qualys WAS GithHub Action
@@ -190,9 +238,6 @@ jobs:
 | CANCEL_HOURS         |   | NO       | ""      | Input parameter |
 | SEVERITY_CHECK       |   | NO       | false   | Input parameter |
 | SEVERITY_LEVEL       |   | NO       | 0       | Input parameter |
-| IS_FAIL_ON_QID_FOUND |   | NO       | false   | Input parameter |
-| QID_LIST             |   | NO       | ""      | Input parameter |
-| EXCLUDE              |   | NO       | ""      | Input parameter |
 | FAIL_ON_SCAN_ERROR   |   | NO       | false   | Input parameter |
 | WAIT_FOR_RESULT      |   | NO       | true    | Input parameter |
  

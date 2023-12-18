@@ -225,12 +225,14 @@ public class QualysWASScanBuilder {
             logger.info("Qualys task - Started Launching web app scanning with WAS");
             String scanId = service.launchScan();
             if (scanId != null && !scanId.isEmpty()) {
-                String message1 = "Scan successfully launched with scan id: " + scanId;
-                String message2 = "Please switch to WAS Classic UI and Check for report...";
-                String message3 = "To check scan result, please follow the url: " + portalUrl + "/portal-front/module/was/#forward=/module/was/&scan-report=" + scanId;
+                String message1 = "Launching scan with 'WAIT_FOR_RESULT:" + waitForResult + "'";
+                String message2 = "Scan successfully launched with scan id: " + scanId;
+                String message3 = "Please switch to WAS Classic UI and Check for report...";
+                String message4 = "To check scan result, please follow the url: " + portalUrl + "/portal-front/module/was/#forward=/module/was/&scan-report=" + scanId;
                 logger.info(message1);
                 logger.info(message2);
                 logger.info(message3);
+                logger.info(message4);
                 if (waitForResult) {
                     logger.info("Qualys task - Fetching scan finished status");
                     getScanFinishedStatus(scanId);
@@ -259,7 +261,7 @@ public class QualysWASScanBuilder {
                         logger.info("Scan finished status fetched successfully");
                     }
                 } else {
-                    String message = message1 + "\n" + message2 + "\n" + message3;
+                    String message = message1 + "\n" + message2 + "\n" + message3 + "\n" + message4;
                     String fileName = "Qualys_Wasscan_" + webAppId + ".txt";
                     Helper.dumpDataIntoFile(message, fileName);
                 }
