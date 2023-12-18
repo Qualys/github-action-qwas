@@ -101,6 +101,7 @@ public class QualysWASScanBuilder {
         this.severity3Limit = 0;
         this.severity4Limit = 0;
         this.severity5Limit = 0;
+
         initWASClient();
         if (severityCheck) {
             assignSeverities(severityLevel);

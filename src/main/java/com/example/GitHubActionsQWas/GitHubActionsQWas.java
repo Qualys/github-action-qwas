@@ -16,22 +16,11 @@ public class GitHubActionsQWas {
 
         ConfigurableApplicationContext ctx = SpringApplication.run(GitHubActionsQWas.class, args);
         Environment environment = ctx.getEnvironment();
-        String username = environment.getProperty("QUALYS_USERNAME");
-        String password = environment.getProperty("QUALYS_PASSWORD");
-        String server = environment.getProperty("API_SERVER");
-        boolean useProxy = Boolean.parseBoolean(environment.getProperty("USE_PROXY"));
-        String scanId = environment.getProperty("SCAN_ID");
-
-        logger.info("[Username: " + username + "]");
-        logger.info("[Password: " + password + "]");
-        logger.info("[Server: " + server + "]");
-        logger.info("[Use-proxy: " + useProxy + "]");
-        logger.info("[Scan-id: " + scanId + "]");
-
         QualysWASScanBuilder builder = new QualysWASScanBuilder(environment);
-        logger.info(builder.toString());
-        builder.launchWebApplicationScan();
-
+        if (true) {
+            logger.info(builder.toString());
+            builder.launchWebApplicationScan();
+        }
         ctx.getBean(GitHubActionsQWas.class);
         ctx.close();
     }
