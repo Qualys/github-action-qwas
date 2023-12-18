@@ -1,6 +1,6 @@
-package com.example.GitHubActions.WASClient;
+package com.example.GitHubActionsQWas.WASClient;
 
-import com.example.GitHubActions.WASAuth.WASAuth;
+import com.example.GitHubActionsQWas.WASAuth.WASAuth;
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;

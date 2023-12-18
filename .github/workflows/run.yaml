@@ -1,4 +1,4 @@
-name: Qualys WAS Scanner For GitHub Demo
+name: Qualys WAS Scan GitHub Actions
 
 on:
   push:
@@ -42,8 +42,8 @@ jobs:
       - name: Archive JAR Artifact
         uses: actions/upload-artifact@v3
         with:
-          name: GitHubActions-Artifact
-          path: target/GitHubActions-0.0.1-SNAPSHOT.jar
+          name: GitHub-Action-QWas-Artifact
+          path: target/GitHubActionsQWas-0.0.1-SNAPSHOT.jar
   
   run:
     runs-on: ubuntu-latest
@@ -61,11 +61,11 @@ jobs:
       - name: Download JAR Artifact
         uses: actions/download-artifact@v3
         with:
-          name: GitHubActions-Artifact
+          name: GitHub-Action-QWas-Artifact
           path: ./
           
       - name: Run Spring Boot App
-        run: java -jar ./GitHubActions-0.0.1-SNAPSHOT.jar
+        run: java -jar ./GitHubActionsQWas-0.0.1-SNAPSHOT.jar
         env:
           PLATFORM: ${{ vars.PLATFORM }}
           API_SERVER: ${{ secrets.API_SERVER }}

@@ -1,4 +1,4 @@
-package com.example.GitHubActions.WASAuth;
+package com.example.GitHubActionsQWas.WASAuth;
 
 public class WASAuth {
     private String server;

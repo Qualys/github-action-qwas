@@ -1,13 +1,12 @@
-package com.example.GitHubActions.WASClient;
+package com.example.GitHubActionsQWas.WASClient;
 
-import com.example.GitHubActions.WASAuth.WASAuth;
+import com.example.GitHubActionsQWas.WASAuth.WASAuth;
 import com.google.gson.*;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.springframework.stereotype.Component;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;

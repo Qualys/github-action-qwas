@@ -1,7 +1,7 @@
-package com.example.GitHubActions.service;
+package com.example.GitHubActionsQWas.service;
 
-import com.example.GitHubActions.WASClient.QualysWASResponse;
-import com.example.GitHubActions.WASClient.WASClient;
+import com.example.GitHubActionsQWas.WASClient.QualysWASResponse;
+import com.example.GitHubActionsQWas.WASClient.WASClient;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
