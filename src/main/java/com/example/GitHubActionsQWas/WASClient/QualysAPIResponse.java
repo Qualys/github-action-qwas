@@ -1,4 +1,4 @@
-package com.example.GitHubActions.WASClient;
+package com.example.GitHubActionsQWas.WASClient;
 
 public class QualysAPIResponse {
     public int responseCode;

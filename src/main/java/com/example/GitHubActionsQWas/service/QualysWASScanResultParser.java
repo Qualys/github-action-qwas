@@ -1,12 +1,10 @@
-package com.example.GitHubActions.service;
+package com.example.GitHubActionsQWas.service;
 
-import com.example.GitHubActions.WASClient.QualysWASResponse;
-import com.example.GitHubActions.WASClient.WASClient;
-import com.example.GitHubActions.util.Helper;
+import com.example.GitHubActionsQWas.WASClient.QualysWASResponse;
+import com.example.GitHubActionsQWas.WASClient.WASClient;
 import com.google.gson.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.HashMap;

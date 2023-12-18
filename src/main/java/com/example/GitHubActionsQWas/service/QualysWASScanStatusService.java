@@ -1,7 +1,6 @@
-package com.example.GitHubActions.service;
+package com.example.GitHubActionsQWas.service;
 
-import com.example.GitHubActions.WASClient.WASClient;
-import com.google.common.base.Stopwatch;
+import com.example.GitHubActionsQWas.WASClient.WASClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,7 +22,6 @@ public class QualysWASScanStatusService {
      * @return
      */
     public String fetchScanStatus(String scanId) {
-        Stopwatch stopwatch = Stopwatch.createStarted();
         long startTime = System.currentTimeMillis();
         long timeoutInMillis = TimeUnit.MINUTES.toMillis(TIMEOUT);
         long intervalInMillis = TimeUnit.MINUTES.toMillis(INTERVAL);

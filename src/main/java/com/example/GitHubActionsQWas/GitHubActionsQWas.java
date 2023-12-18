@@ -1,9 +1,6 @@
-package com.example.GitHubActions;
+package com.example.GitHubActionsQWas;
 
-import com.example.GitHubActions.WASClient.QualysWASResponse;
-import com.example.GitHubActions.WASClient.WASClient;
-import com.example.GitHubActions.service.QualysWASScanBuilder;
-import com.google.gson.JsonObject;
+import com.example.GitHubActionsQWas.service.QualysWASScanBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
@@ -12,12 +9,12 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.Environment;
 
 @SpringBootApplication
-public class GitHubActionsApplication {
-    private static final Logger logger = LoggerFactory.getLogger(GitHubActionsApplication.class);
+public class GitHubActionsQWas {
+    private static final Logger logger = LoggerFactory.getLogger(GitHubActionsQWas.class);
 
     public static void main(String[] args) {
 
-        ConfigurableApplicationContext ctx = SpringApplication.run(GitHubActionsApplication.class, args);
+        ConfigurableApplicationContext ctx = SpringApplication.run(GitHubActionsQWas.class, args);
         Environment environment = ctx.getEnvironment();
         String username = environment.getProperty("QUALYS_USERNAME");
         String password = environment.getProperty("QUALYS_PASSWORD");
@@ -35,7 +32,7 @@ public class GitHubActionsApplication {
         logger.info(builder.toString());
         builder.launchWebApplicationScan();
 
-        ctx.getBean(GitHubActionsApplication.class);
+        ctx.getBean(GitHubActionsQWas.class);
         ctx.close();
     }
 }

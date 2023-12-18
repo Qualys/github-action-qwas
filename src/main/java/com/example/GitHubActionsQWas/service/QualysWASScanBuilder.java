@@ -1,8 +1,8 @@
-package com.example.GitHubActions.service;
+package com.example.GitHubActionsQWas.service;
 
-import com.example.GitHubActions.WASAuth.WASAuth;
-import com.example.GitHubActions.WASClient.WASClient;
-import com.example.GitHubActions.util.Helper;
+import com.example.GitHubActionsQWas.WASAuth.WASAuth;
+import com.example.GitHubActionsQWas.WASClient.WASClient;
+import com.example.GitHubActionsQWas.util.Helper;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -244,7 +244,7 @@ public class QualysWASScanBuilder {
                             String fileName = "Qualys_Wasscan_" + scanId + ".json";
                             JsonObject data = result;
                             data.get("ServiceResponse").getAsJsonObject().getAsJsonArray("data").get(0).getAsJsonObject().get("WasScan").getAsJsonObject().remove("igs").getAsJsonObject();
-
+                            data.get("ServiceResponse").getAsJsonObject().getAsJsonArray("data").get(0).getAsJsonObject().get("WasScan").getAsJsonObject().addProperty("ScanId", scanId);
                             Helper.dumpDataIntoFile(gson.toJson(data), fileName);
 
                             JsonObject evaluationResult = evaluateFailurePolicy(result);

@@ -1,4 +1,4 @@
-package com.example.GitHubActions.WASClient;
+package com.example.GitHubActionsQWas.WASClient;
 
 import com.google.gson.JsonObject;
 
