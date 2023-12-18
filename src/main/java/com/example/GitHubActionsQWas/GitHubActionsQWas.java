@@ -17,9 +17,11 @@ public class GitHubActionsQWas {
         ConfigurableApplicationContext ctx = SpringApplication.run(GitHubActionsQWas.class, args);
         Environment environment = ctx.getEnvironment();
         QualysWASScanBuilder builder = new QualysWASScanBuilder(environment);
-        if (true) {
+        if (builder.isMandatoryParametersSet()) {
             logger.info(builder.toString());
             builder.launchWebApplicationScan();
+        } else {
+            logger.error("Few mandatory parameters are not set. Please set them and try again.");
         }
         ctx.getBean(GitHubActionsQWas.class);
         ctx.close();
