@@ -331,7 +331,15 @@ public class QualysWASScanBuilder {
         return StringUtils.join(failureMessages, '\n');
     }
 
-
+    public boolean isMandatoryParametersSet() {
+        return !( this.platform == null || this.platform.isEmpty()
+                || this.apiServer == null || this.apiServer.isEmpty()
+                || this.qualysUsername == null || this.qualysUsername.isEmpty()
+                || this.qualysPasssword == null || this.qualysPasssword.isEmpty()
+                || webAppId == null || webAppId.isEmpty()
+                || scanName == null || scanName.isEmpty()
+                || scanType == null || scanType.isEmpty());
+    }
     @Override
     public String toString() {
         return "QualysWASScanBuilder{" + "platform='" + platform + '\'' + ", apiServer='" + apiServer + '\'' + ", qualysUsername='" + qualysUsername + '\'' + ", qualysPasssword='" + qualysPasssword + '\'' + ", useProxy=" + useProxy + ", proxyServer='" + proxyServer + '\'' + ", proxyPort=" + proxyPort + ", proxyUsername='" + proxyUsername + '\'' + ", proxyPassword='" + proxyPassword + '\'' + ", webAppId='" + webAppId + '\'' + ", scanName='" + scanName + '\'' + ", scanType='" + scanType + '\'' + ", authRecord='" + authRecord + '\'' + ", authRecordId='" + authRecordId + '\'' + ", optionProfile='" + optionProfile + '\'' + ", optionProfileId='" + optionProfileId + '\'' + ", cancelOptions='" + cancelOptions + '\'' + ", cancelHours='" + cancelHours + '\'' + ", isFailOnSevereVulns=" + isFailOnSevereVulns + ", severity1Limit=" + severity1Limit + ", severity2Limit=" + severity2Limit + ", severity3Limit=" + severity3Limit + ", severity4Limit=" + severity4Limit + ", severity5Limit=" + severity5Limit + ", isSev1Vulns=" + isSev1Vulns + ", isSev2Vulns=" + isSev2Vulns + ", isSev3Vulns=" + isSev3Vulns + ", isSev4Vulns=" + isSev4Vulns + ", isSev5Vulns=" + isSev5Vulns + ", isFailOnQidFound=" + isFailOnQidFound + ", qidList='" + qidList + '\'' + ", isFailOnScanError=" + isFailOnScanError + ", pollingInterval='" + pollingInterval + '\'' + ", vulnsTimeout='" + vulnsTimeout + '\'' + ", environment=" + environment + '}';
