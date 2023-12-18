@@ -96,5 +96,5 @@ jobs:
       - name: Upload Scan Report
         uses: actions/upload-artifact@v3
         with:
-          name: Scan-Report
+          name: Qualys_WAS_Scan_Result
           path: ./outputs
