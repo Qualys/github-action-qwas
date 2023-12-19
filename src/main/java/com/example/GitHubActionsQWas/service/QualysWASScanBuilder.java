@@ -47,7 +47,7 @@ public class QualysWASScanBuilder {
     private String optionProfileId;
     private String cancelOptions;
     private String cancelHours;
-    private boolean isFailOnSevereVulns;
+    private boolean isFailOnSevereVulns = true;
     private boolean severityCheck;
     private int severityLevel;
     private int severity1Limit;
@@ -158,10 +158,6 @@ public class QualysWASScanBuilder {
             } else {
                 List<String> qids = new ArrayList<>(List.of(this.qidList.split(",")));
                 qids.replaceAll(String::trim);
-                if (this.exclude != null) {
-                    String[] excludeQids = this.exclude.split(",");
-                    qids.removeAll(List.of(excludeQids));
-                }
                 JsonElement element = gson.toJsonTree(qids, new TypeToken<List<String>>() {
                 }.getType());
                 failConditionsObj.add("qids", element);
@@ -178,6 +174,17 @@ public class QualysWASScanBuilder {
         }
         if (isFailOnScanError) {
             failConditionsObj.addProperty("failOnScanError", true);
+        }
+
+        if (this.exclude == null || this.exclude.isEmpty()) {
+            JsonElement empty = new JsonArray();
+            failConditionsObj.add("excludeQids", empty);
+        } else {
+            List<String> excludeQids = new ArrayList<>(List.of(this.exclude.split(",")));
+            excludeQids.replaceAll(String::trim);
+            JsonElement element = gson.toJsonTree(excludeQids, new TypeToken<List<String>>() {
+            }.getType());
+            failConditionsObj.add("excludeQids", element);
         }
         obj.add("failConditions", failConditionsObj);
 
@@ -275,7 +282,7 @@ public class QualysWASScanBuilder {
         }
     }
 
-    private JsonObject evaluateFailurePolicy(JsonObject result) throws Exception {
+    public JsonObject evaluateFailurePolicy(JsonObject result) throws Exception {
         Gson gson = new Gson();
         QualysWASScanResultParser criteria = new QualysWASScanResultParser(gson.toJson(getCriteriaAsJsonObject()), client);
         Boolean passed = criteria.evaluate(result);
@@ -334,7 +341,7 @@ public class QualysWASScanBuilder {
     }
 
     public boolean isMandatoryParametersSet() {
-        return !( this.platform == null || this.platform.isEmpty()
+        return !(this.platform == null || this.platform.isEmpty()
                 || this.apiServer == null || this.apiServer.isEmpty()
                 || this.qualysUsername == null || this.qualysUsername.isEmpty()
                 || this.qualysPasssword == null || this.qualysPasssword.isEmpty()
@@ -342,6 +349,7 @@ public class QualysWASScanBuilder {
                 || scanName == null || scanName.isEmpty()
                 || scanType == null || scanType.isEmpty());
     }
+
     @Override
     public String toString() {
         return "QualysWASScanBuilder{" + "platform='" + platform + '\'' + ", apiServer='" + apiServer + '\'' + ", qualysUsername='" + qualysUsername + '\'' + ", qualysPasssword='" + qualysPasssword + '\'' + ", useProxy=" + useProxy + ", proxyServer='" + proxyServer + '\'' + ", proxyPort=" + proxyPort + ", proxyUsername='" + proxyUsername + '\'' + ", proxyPassword='" + proxyPassword + '\'' + ", webAppId='" + webAppId + '\'' + ", scanName='" + scanName + '\'' + ", scanType='" + scanType + '\'' + ", authRecord='" + authRecord + '\'' + ", authRecordId='" + authRecordId + '\'' + ", optionProfile='" + optionProfile + '\'' + ", optionProfileId='" + optionProfileId + '\'' + ", cancelOptions='" + cancelOptions + '\'' + ", cancelHours='" + cancelHours + '\'' + ", isFailOnSevereVulns=" + isFailOnSevereVulns + ", severity1Limit=" + severity1Limit + ", severity2Limit=" + severity2Limit + ", severity3Limit=" + severity3Limit + ", severity4Limit=" + severity4Limit + ", severity5Limit=" + severity5Limit + ", isSev1Vulns=" + isSev1Vulns + ", isSev2Vulns=" + isSev2Vulns + ", isSev3Vulns=" + isSev3Vulns + ", isSev4Vulns=" + isSev4Vulns + ", isSev5Vulns=" + isSev5Vulns + ", isFailOnQidFound=" + isFailOnQidFound + ", qidList='" + qidList + '\'' + ", isFailOnScanError=" + isFailOnScanError + ", pollingInterval='" + pollingInterval + '\'' + ", vulnsTimeout='" + vulnsTimeout + '\'' + ", environment=" + environment + '}';
