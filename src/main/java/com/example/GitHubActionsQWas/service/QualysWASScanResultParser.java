@@ -13,6 +13,8 @@ import java.util.stream.Collectors;
 public class QualysWASScanResultParser {
     private static final Logger logger = LoggerFactory.getLogger(QualysWASScanResultParser.class);
     public JsonObject returnObject;
+    ArrayList<Integer> qidExcludeList = new ArrayList<>(0);
+    ArrayList<Integer> qidExcludeFound = new ArrayList<>(0);
     private ArrayList<Integer> qidList;
     private HashMap<Integer, Integer> severityMap;
     private boolean sevStaus = true;
@@ -21,6 +23,8 @@ public class QualysWASScanResultParser {
     private ArrayList<String> configuredQids;
     private ArrayList<Integer> qidsFound = new ArrayList<>(0);
     private WASClient client;
+    private JsonObject statsData;
+    private JsonArray vulnsArr;
 
     public QualysWASScanResultParser(String criteriaJson, WASClient client) throws Exception {
         this.client = client;
@@ -91,6 +95,24 @@ public class QualysWASScanResultParser {
                 logger.error("'severities' not found in given JSON.");
             }
 
+            if (failConditions.has("excludeQids") && !failConditions.get("excludeQids").isJsonNull()) {
+                JsonArray excludeQids = failConditions.getAsJsonArray("excludeQids");
+                for (JsonElement qid : excludeQids) {
+                    String qidString = qid.getAsString();
+                    if (qidString.contains("-")) {
+                        String[] qidElements = qidString.split("-");
+                        int start = Integer.parseInt(qidElements[0]);
+                        int end = Integer.parseInt(qidElements[1]);
+                        for (int i = start; i <= end; i++) {
+                            this.qidExcludeList.add(i);
+                        }
+                    } else {
+                        this.qidExcludeList.add(Integer.parseInt(qidString));
+                    }
+                }
+            } else {
+                logger.error("'excludeQids' not found in given JSON.");
+            }
         } else {
             logger.error("'failConditions' not found in given JSON.");
         }
@@ -129,9 +151,11 @@ public class QualysWASScanResultParser {
             int vulnsCount = vulns.get("count").getAsInt();
             if (vulnsCount > 0 && vulns.has("list") && !vulns.get("list").isJsonNull()) {
                 JsonObject statsObj = scanObj.get("stats").getAsJsonObject();
-                JsonObject statsData = statsObj.get("global").getAsJsonObject();
-                JsonArray vulnsArr = vulns.getAsJsonArray("list");
+                this.statsData = statsObj.get("global").getAsJsonObject();
+                this.vulnsArr = vulns.getAsJsonArray("list");
                 returnObject.add("vulnsTable", vulns); // Add Vulnerabilities
+
+                processExcludeList();
 
                 // Evaluate Severity
                 sevStatus = this.evaluateSev(statsData);
@@ -146,6 +170,35 @@ public class QualysWASScanResultParser {
         }
 
         return finalStatus;
+    }
+
+    private void processExcludeList() {
+        try {
+            for (JsonElement vuln : this.vulnsArr) {
+                JsonObject scanObject = vuln.getAsJsonObject();
+                JsonObject vulnObject = scanObject.get("WasScanVuln").getAsJsonObject();
+                int severityLevel = vulnObject.get("severity").getAsInt();
+                Integer qid = 0;
+                if (vulnObject.has("qid")) {
+                    qid = vulnObject.get("qid").getAsInt();
+                }
+                if (this.qidExcludeList.contains(qid)) {
+                    int severityCount = this.statsData.get("nbVulnsLevel" + severityLevel).getAsInt();
+                    this.statsData.addProperty("nbVulnsLevel" + severityLevel, severityCount - 1);
+                    if (!this.qidExcludeFound.contains(qid)) {
+                        this.qidExcludeFound.add(qid);
+                    }
+                }
+                logger.info("You have provided QID: " + qid + " as a member of exclude list, hence skipping it.");
+            }// for vulns
+            int index = 0;
+//        remove qids from vulns array
+            for (int qid : this.qidExcludeFound) {
+                this.vulnsArr.remove(this.qidExcludeFound.indexOf(qid) - index++);
+            }
+        } catch (Exception ex) {
+            logger.error("something went wrong - Reason: " + ex.getMessage());
+        }
     }
 
     private void addSeverities(HashMap<Integer, Integer> counts) {
