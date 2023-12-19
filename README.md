@@ -12,7 +12,7 @@
 3. Create GitHub Secrets for Qualys URL, Qualys Username and Qualys Password.
    Refer to [Encrypted secrets](https://docs.github.com/en/actions/reference/encrypted-secrets) for more details on how to setup secrets.
 4. Configure your workflow. In the actions section use `Qualys/github_action_qwas@main`
-   Note: the `actions/checkout` step is required to run before the scan action, otherwise the action does not have access to the IaC files to be scanned.
+   Note: the `actions/checkout` step is required to run before the scan action, otherwise the action does not have access to the Web apps to be scanned.
 5. Optionally, supply parameters to customize GitHub action behaviour.
 
 ## Usage Examples
