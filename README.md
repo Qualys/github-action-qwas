@@ -218,7 +218,6 @@ jobs:
 
 | Parameter            | Description | Required | Default | Type            |
 |----------------------| -------------------------------------------------------------------------------------------------------- |----------|---------|-----------------|
-| PLATFORM             |   | YES      | ""      | Input parameter |
 | API_SERVER           |   | YES      | ""      | Input parameter |
 | QUALYS_USERNAME      |   | YES      | ""      | Input parameter |
 | QUALYS_PASSWORD      |   | YES      | ""      | Input parameter |
