@@ -18,7 +18,6 @@ import org.springframework.core.env.Environment;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @Getter
 @Setter
@@ -29,7 +28,6 @@ public class QualysWASScanBuilder {
     private final static int DEFAULT_TIMEOUT_FOR_VULNS = 60 * 24;
     @Autowired
     private final Environment environment;
-    private String platform;
     private String apiServer;
     private String qualysUsername;
     private String qualysPasssword;
@@ -71,7 +69,6 @@ public class QualysWASScanBuilder {
 
     public QualysWASScanBuilder(Environment environment) {
         this.environment = environment;
-        this.platform = environment.getProperty("PLATFORM", "");
         this.apiServer = environment.getProperty("API_SERVER", "");
         this.qualysUsername = environment.getProperty("QUALYS_USERNAME", "");
         this.qualysPasssword = environment.getProperty("QUALYS_PASSWORD", "");
@@ -196,16 +193,9 @@ public class QualysWASScanBuilder {
      *
      */
     public void launchWebApplicationScan() {
-        Map<String, String> platformObj = Helper.platformsList.get(platform);
         String portalUrl = apiServer;
 
-        if (!platform.equalsIgnoreCase("pcp")) {
-            setApiServer(platformObj.get("url"));
-            logger.info("Qualys API Server URL: " + apiServer);
-            portalUrl = platformObj.get("portal");
-        }
-
-        logger.info("Using Qualys Platform: " + platform + ". API Server: " + apiServer);
+        logger.info("Using Qualys API Server: " + apiServer);
 
         try {
             try {
@@ -341,8 +331,7 @@ public class QualysWASScanBuilder {
     }
 
     public boolean isMandatoryParametersSet() {
-        return !(this.platform == null || this.platform.isEmpty()
-                || this.apiServer == null || this.apiServer.isEmpty()
+        return !(this.apiServer == null || this.apiServer.isEmpty()
                 || this.qualysUsername == null || this.qualysUsername.isEmpty()
                 || this.qualysPasssword == null || this.qualysPasssword.isEmpty()
                 || webAppId == null || webAppId.isEmpty()
@@ -352,6 +341,46 @@ public class QualysWASScanBuilder {
 
     @Override
     public String toString() {
-        return "QualysWASScanBuilder{" + "platform='" + platform + '\'' + ", apiServer='" + apiServer + '\'' + ", qualysUsername='" + qualysUsername + '\'' + ", qualysPasssword='" + qualysPasssword + '\'' + ", useProxy=" + useProxy + ", proxyServer='" + proxyServer + '\'' + ", proxyPort=" + proxyPort + ", proxyUsername='" + proxyUsername + '\'' + ", proxyPassword='" + proxyPassword + '\'' + ", webAppId='" + webAppId + '\'' + ", scanName='" + scanName + '\'' + ", scanType='" + scanType + '\'' + ", authRecord='" + authRecord + '\'' + ", authRecordId='" + authRecordId + '\'' + ", optionProfile='" + optionProfile + '\'' + ", optionProfileId='" + optionProfileId + '\'' + ", cancelOptions='" + cancelOptions + '\'' + ", cancelHours='" + cancelHours + '\'' + ", isFailOnSevereVulns=" + isFailOnSevereVulns + ", severity1Limit=" + severity1Limit + ", severity2Limit=" + severity2Limit + ", severity3Limit=" + severity3Limit + ", severity4Limit=" + severity4Limit + ", severity5Limit=" + severity5Limit + ", isSev1Vulns=" + isSev1Vulns + ", isSev2Vulns=" + isSev2Vulns + ", isSev3Vulns=" + isSev3Vulns + ", isSev4Vulns=" + isSev4Vulns + ", isSev5Vulns=" + isSev5Vulns + ", isFailOnQidFound=" + isFailOnQidFound + ", qidList='" + qidList + '\'' + ", isFailOnScanError=" + isFailOnScanError + ", pollingInterval='" + pollingInterval + '\'' + ", vulnsTimeout='" + vulnsTimeout + '\'' + ", environment=" + environment + '}';
+        return "QualysWASScanBuilder{" +
+                "environment=" + environment +
+                ", apiServer='" + apiServer + '\'' +
+                ", qualysUsername='" + qualysUsername + '\'' +
+                ", qualysPasssword='" + qualysPasssword + '\'' +
+                ", useProxy=" + useProxy +
+                ", proxyServer='" + proxyServer + '\'' +
+                ", proxyPort=" + proxyPort +
+                ", proxyUsername='" + proxyUsername + '\'' +
+                ", proxyPassword='" + proxyPassword + '\'' +
+                ", webAppId='" + webAppId + '\'' +
+                ", scanName='" + scanName + '\'' +
+                ", scanType='" + scanType + '\'' +
+                ", authRecord='" + authRecord + '\'' +
+                ", authRecordId='" + authRecordId + '\'' +
+                ", optionProfile='" + optionProfile + '\'' +
+                ", optionProfileId='" + optionProfileId + '\'' +
+                ", cancelOptions='" + cancelOptions + '\'' +
+                ", cancelHours='" + cancelHours + '\'' +
+                ", isFailOnSevereVulns=" + isFailOnSevereVulns +
+                ", severityCheck=" + severityCheck +
+                ", severityLevel=" + severityLevel +
+                ", severity1Limit=" + severity1Limit +
+                ", severity2Limit=" + severity2Limit +
+                ", severity3Limit=" + severity3Limit +
+                ", severity4Limit=" + severity4Limit +
+                ", severity5Limit=" + severity5Limit +
+                ", isSev1Vulns=" + isSev1Vulns +
+                ", isSev2Vulns=" + isSev2Vulns +
+                ", isSev3Vulns=" + isSev3Vulns +
+                ", isSev4Vulns=" + isSev4Vulns +
+                ", isSev5Vulns=" + isSev5Vulns +
+                ", isFailOnQidFound=" + isFailOnQidFound +
+                ", qidList='" + qidList + '\'' +
+                ", exclude='" + exclude + '\'' +
+                ", isFailOnScanError=" + isFailOnScanError +
+                ", pollingInterval='" + pollingInterval + '\'' +
+                ", vulnsTimeout='" + vulnsTimeout + '\'' +
+                ", waitForResult=" + waitForResult +
+                ", client=" + client +
+                '}';
     }
 }
