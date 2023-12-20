@@ -39,7 +39,6 @@ jobs:
             uses: Qualys/github_action_qwas@main
             id: was
             with:
-              PLATFORM: ${{ vars.PLATFORM }}
               API_SERVER: ${{ secrets.API_SERVER }}
               QUALYS_USERNAME: ${{ secrets.QUALYS_USERNAME }}
               QUALYS_PASSWORD: ${{ secrets.QUALYS_PASSWORD }}
@@ -104,7 +103,6 @@ jobs:
         uses: Qualys/github_action_qwas@main
         id: was
         with:
-          PLATFORM: ${{ vars.PLATFORM }}
           API_SERVER: ${{ secrets.API_SERVER }}
           QUALYS_USERNAME: ${{ secrets.QUALYS_USERNAME }}
           QUALYS_PASSWORD: ${{ secrets.QUALYS_PASSWORD }}
@@ -166,7 +164,6 @@ jobs:
         uses: Qualys/github_action_qwas@main
         id: was
         with:
-          PLATFORM: ${{ vars.PLATFORM }}
           API_SERVER: ${{ secrets.API_SERVER }}
           QUALYS_USERNAME: ${{ secrets.QUALYS_USERNAME }}
           QUALYS_PASSWORD: ${{ secrets.QUALYS_PASSWORD }}

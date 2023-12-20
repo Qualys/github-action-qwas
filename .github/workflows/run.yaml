@@ -67,7 +67,6 @@ jobs:
       - name: Run Spring Boot App
         run: java -jar ./GitHubActionsQWas-0.0.1-SNAPSHOT.jar
         env:
-          PLATFORM: ${{ vars.PLATFORM }}
           API_SERVER: ${{ secrets.API_SERVER }}
           QUALYS_USERNAME: ${{ secrets.QUALYS_USERNAME }}
           QUALYS_PASSWORD: ${{ secrets.QUALYS_PASSWORD }}
