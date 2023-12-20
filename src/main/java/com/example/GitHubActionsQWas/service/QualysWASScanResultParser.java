@@ -155,7 +155,9 @@ public class QualysWASScanResultParser {
                 this.vulnsArr = vulns.getAsJsonArray("list");
                 returnObject.add("vulnsTable", vulns); // Add Vulnerabilities
 
-                processExcludeList();
+                if (!this.qidExcludeList.isEmpty()) {
+                    processExcludeList();
+                }
 
                 // Evaluate Severity
                 sevStatus = this.evaluateSev(statsData);
