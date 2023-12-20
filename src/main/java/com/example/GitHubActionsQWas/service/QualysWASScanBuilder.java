@@ -184,8 +184,6 @@ public class QualysWASScanBuilder {
             failConditionsObj.add("excludeQids", element);
         }
         obj.add("failConditions", failConditionsObj);
-
-        logger.info("Criteria Object to common library: " + obj);
         return obj;
     }
 
