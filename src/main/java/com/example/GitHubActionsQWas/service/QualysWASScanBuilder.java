@@ -230,7 +230,7 @@ public class QualysWASScanBuilder {
                 logger.info(message2);
                 logger.info(message3);
                 logger.info(message4);
-                if (waitForResult) {
+                if (this.waitForResult) {
                     logger.info("Qualys task - Fetching scan finished status");
                     getScanFinishedStatus(scanId);
                     logger.info("Scan finished status fetched successfully");
