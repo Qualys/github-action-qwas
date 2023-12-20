@@ -209,7 +209,7 @@ jobs:
 ## Prerequisites for Qualys WAS GithHub Action
 1. Valid Qualys Credentials and subscription of Qualys CloudView module.
 2. Use of `actions/checkout@v3` with ` fetch-depth: 0` before calling Qualys WAS GitHub action.
-3. `PLATFORM, API_SERVER, QUALYS_USERNAME, QUALYS_PASSWORD, PROXY_SERVER, PROXY_USERNAME, PROXY_PASSWORD` to be added in `secrets` and remaining to be added in the `repository variables` of Qualys WAS GitHub action.
+3. `API_SERVER, QUALYS_USERNAME, QUALYS_PASSWORD, PROXY_SERVER, PROXY_USERNAME, PROXY_PASSWORD` to be added in `secrets` and remaining to be added in the `repository variables` of Qualys WAS GitHub action.
 
 ## GitHub action Parameters
 

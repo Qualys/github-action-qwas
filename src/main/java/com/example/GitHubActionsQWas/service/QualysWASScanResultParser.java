@@ -62,7 +62,7 @@ public class QualysWASScanResultParser {
                 returnObject.add("qids", qidsConf);
 
             } else {
-                logger.error("'qids' not found in given JSON.");
+                logger.info("'qids' not found in given JSON.");
             }
 
             // Severities
@@ -92,7 +92,7 @@ public class QualysWASScanResultParser {
                 this.severityMap.put(3, -1);
                 this.severityMap.put(4, -1);
                 this.severityMap.put(5, -1);
-                logger.error("'severities' not found in given JSON.");
+                logger.info("'severities' not found in given JSON.");
             }
 
             if (failConditions.has("excludeQids") && !failConditions.get("excludeQids").isJsonNull()) {
@@ -111,10 +111,10 @@ public class QualysWASScanResultParser {
                     }
                 }
             } else {
-                logger.error("'excludeQids' not found in given JSON.");
+                logger.info("'excludeQids' not found in given JSON.");
             }
         } else {
-            logger.error("'failConditions' not found in given JSON.");
+            logger.info("'failConditions' not found in given JSON.");
         }
     }
 
@@ -268,7 +268,7 @@ public class QualysWASScanResultParser {
 
             int sevCount = statsData.get("nbVulnsLevel" + i).getAsInt();
             evaluationSev.put(i, sevCount);
-            if (!this.severityMap.isEmpty() && this.severityMap.get(i) != -1 && sevCount > this.severityMap.get(i)) {
+            if (!this.severityMap.isEmpty() && this.severityMap.get(i) != -1 && sevCount >= this.severityMap.get(i)) {
                 sevStatus = false;
                 failedReasons.add("Failling this build because found severity" + i + " has more than configured");
             }
