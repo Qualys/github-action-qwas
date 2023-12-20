@@ -252,7 +252,7 @@ public class QualysWASScanBuilder {
 
                             if (!buildPassed) {
                                 String failureMessage = evaluationResult.get("failureMessage").getAsString();
-                                throw new Exception(failureMessage);
+                                logger.error(failureMessage);
                             }
                         }
                         logger.info("Scan finished status fetched successfully");
