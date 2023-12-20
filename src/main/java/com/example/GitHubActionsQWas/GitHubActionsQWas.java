@@ -14,7 +14,7 @@ import org.springframework.core.env.Environment;
 public class GitHubActionsQWas {
     private static final Logger logger = LoggerFactory.getLogger(GitHubActionsQWas.class);
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
 
         ConfigurableApplicationContext ctx = SpringApplication.run(GitHubActionsQWas.class, args);
         Environment environment = ctx.getEnvironment();
