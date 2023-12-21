@@ -58,8 +58,6 @@ jobs:
               CANCEL_HOURS: ${{ vars.CANCEL_HOURS }}
               SEVERITY_CHECK: ${{ vars.SEVERITY_CHECK }}
               SEVERITY_LEVEL: ${{ vars.SEVERITY_LEVEL }}
-              IS_FAIL_ON_QID_FOUND: ${{ vars.IS_FAIL_ON_QID_FOUND }}
-              QID_LIST: ${{ vars.QID_LIST }}
               EXCLUDE: ${{ vars.EXCLUDE }}
               FAIL_ON_SCAN_ERROR: ${{ vars.FAIL_ON_SCAN_ERROR }}
               WAIT_FOR_RESULT: ${{ vars.WAIT_FOR_RESULT }}
@@ -122,8 +120,6 @@ jobs:
           CANCEL_HOURS: ${{ vars.CANCEL_HOURS }}
           SEVERITY_CHECK: ${{ vars.SEVERITY_CHECK }}
           SEVERITY_LEVEL: ${{ vars.SEVERITY_LEVEL }}
-          IS_FAIL_ON_QID_FOUND: ${{ vars.IS_FAIL_ON_QID_FOUND }}
-          QID_LIST: ${{ vars.QID_LIST }}
           EXCLUDE: ${{ vars.EXCLUDE }}
           FAIL_ON_SCAN_ERROR: ${{ vars.FAIL_ON_SCAN_ERROR }}
           WAIT_FOR_RESULT: ${{ vars.WAIT_FOR_RESULT }}
@@ -183,8 +179,6 @@ jobs:
           CANCEL_HOURS: ${{ vars.CANCEL_HOURS }}
           SEVERITY_CHECK: ${{ vars.SEVERITY_CHECK }}
           SEVERITY_LEVEL: ${{ vars.SEVERITY_LEVEL }}
-          IS_FAIL_ON_QID_FOUND: ${{ vars.IS_FAIL_ON_QID_FOUND }}
-          QID_LIST: ${{ vars.QID_LIST }}
           EXCLUDE: ${{ vars.EXCLUDE }}
           FAIL_ON_SCAN_ERROR: ${{ vars.FAIL_ON_SCAN_ERROR }}
           WAIT_FOR_RESULT: ${{ vars.WAIT_FOR_RESULT }}
