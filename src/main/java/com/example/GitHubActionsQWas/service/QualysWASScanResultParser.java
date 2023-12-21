@@ -62,7 +62,7 @@ public class QualysWASScanResultParser {
                 returnObject.add("qids", qidsConf);
 
             } else {
-                logger.info("'qids' not found in given JSON.");
+                logger.debug("'qids' not found in given JSON.");
             }
 
             // Severities
@@ -92,7 +92,7 @@ public class QualysWASScanResultParser {
                 this.severityMap.put(3, -1);
                 this.severityMap.put(4, -1);
                 this.severityMap.put(5, -1);
-                logger.info("'severities' not found in given JSON.");
+                logger.debug("'severities' not found in given JSON.");
             }
 
             if (failConditions.has("excludeQids") && !failConditions.get("excludeQids").isJsonNull()) {
@@ -111,10 +111,10 @@ public class QualysWASScanResultParser {
                     }
                 }
             } else {
-                logger.info("'excludeQids' not found in given JSON.");
+                logger.debug("'excludeQids' not found in given JSON.");
             }
         } else {
-            logger.info("'failConditions' not found in given JSON.");
+            logger.debug("'failConditions' not found in given JSON.");
         }
     }
 
@@ -161,7 +161,7 @@ public class QualysWASScanResultParser {
 
                 // Evaluate Severity
                 sevStatus = this.evaluateSev(statsData);
-                qidStatus = this.evaluateQids(vulnsArr);
+//                qidStatus = this.evaluateQids(vulnsArr);
             }
 
         }
@@ -190,14 +190,15 @@ public class QualysWASScanResultParser {
                     if (!this.qidExcludeFound.contains(qid)) {
                         this.qidExcludeFound.add(qid);
                     }
+                    logger.info("You have provided QID: " + qid + " as a member of exclude list, hence skipping it.");
                 }
-                logger.info("You have provided QID: " + qid + " as a member of exclude list, hence skipping it.");
             }// for vulns
-            int index = 0;
-//        remove qids from vulns array
-            for (int qid : this.qidExcludeFound) {
-                this.vulnsArr.remove(this.qidExcludeFound.indexOf(qid) - index++);
-            }
+
+//      TODO:  remove qids from vulnsArr
+//      for (int qid : this.qidExcludeFound) {
+//          this.vulnsArr.remove(qid);
+//      }
+
         } catch (Exception ex) {
             logger.error("something went wrong - Reason: " + ex.getMessage());
         }
@@ -243,20 +244,6 @@ public class QualysWASScanResultParser {
         returnObject.add("severities", sevVulnsElement);
     }
 
-    public String getMyNumbersAsString(ArrayList<Integer> arrayList) {
-        if (arrayList.isEmpty()) {
-            return "";
-        }
-
-        StringBuilder str = new StringBuilder();
-        for (int i = 0; i < arrayList.size(); i++) {
-            int myNumbersInt = arrayList.get(i);
-            str.append(myNumbersInt + ",");
-        }
-        str.setLength(str.length() - 1);
-        return str.toString();
-    }
-
     public JsonObject getResult() {
         return this.returnObject;
     }
@@ -279,50 +266,46 @@ public class QualysWASScanResultParser {
         return sevStatus;
     }
 
-    public Boolean evaluateQids(JsonArray vulns) {
-        Boolean qidStatus = true;
-
-        for (JsonElement vuln : vulns) {
-            JsonObject scanObject = vuln.getAsJsonObject();
-            JsonObject vulnObject = scanObject.get("WasScanVuln").getAsJsonObject();
-
-            Integer qid = 0;
-            if (vulnObject.has("qid")) {
-                qid = vulnObject.get("qid").getAsInt();
-            }
-            if (this.qidList.contains(qid)) {
-                if (!qidsFound.contains(qid)) qidsFound.add(qid);
-            }
-        }// for vulns
-
-        JsonObject qids = new JsonObject();
-
-        if (configuredQids.size() > 0) {
-            qids.addProperty("configured", String.join(",", configuredQids)); //configured
-        } else {
-            qids.add("configured", null);
-        }
-
-        String foundQidsString = this.getMyNumbersAsString(this.qidsFound);
-
-        if (!foundQidsString.isEmpty()) {
-            qids.addProperty("found", foundQidsString);
-        } else {
-            qids.add("found", null);  // add null we found nothing
-        }
-
-        if (qidsFound.size() > 0) {
-            qidStatus = false;
-            failedReasons.add("Failling this build because found qid(s) - " + qidsFound.toString());
-        }
-
-        qids.addProperty("result", qidStatus);
-        returnObject.add("qids", qids);
-
-        return qidStatus;
-    }
-
-    public ArrayList<String> getBuildFailedReasons() {
-        return (ArrayList<String>) this.failedReasons.stream().distinct().collect(Collectors.toList());
-    }
+//    public Boolean evaluateQids(JsonArray vulns) {
+//        Boolean qidStatus = true;
+//
+//        for (JsonElement vuln : vulns) {
+//            JsonObject scanObject = vuln.getAsJsonObject();
+//            JsonObject vulnObject = scanObject.get("WasScanVuln").getAsJsonObject();
+//
+//            Integer qid = 0;
+//            if (vulnObject.has("qid")) {
+//                qid = vulnObject.get("qid").getAsInt();
+//            }
+//            if (this.qidList.contains(qid)) {
+//                if (!qidsFound.contains(qid)) qidsFound.add(qid);
+//            }
+//        }// for vulns
+//
+//        JsonObject qids = new JsonObject();
+//
+//        if (configuredQids.size() > 0) {
+//            qids.addProperty("configured", String.join(",", configuredQids)); //configured
+//        } else {
+//            qids.add("configured", null);
+//        }
+//
+//        String foundQidsString = this.getMyNumbersAsString(this.qidsFound);
+//
+//        if (!foundQidsString.isEmpty()) {
+//            qids.addProperty("found", foundQidsString);
+//        } else {
+//            qids.add("found", null);  // add null we found nothing
+//        }
+//
+//        if (qidsFound.size() > 0) {
+//            qidStatus = false;
+//            failedReasons.add("Failling this build because found qid(s) - " + qidsFound.toString());
+//        }
+//
+//        qids.addProperty("result", qidStatus);
+//        returnObject.add("qids", qids);
+//
+//        return qidStatus;
+//    }
 }

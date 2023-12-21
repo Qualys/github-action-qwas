@@ -102,10 +102,10 @@ public class QualysWASScanService {
             requestData.add("ServiceRequest", requestObj);
 
             List<String> scan_ids = new ArrayList<String>();
-            logger.info(new Timestamp(System.currentTimeMillis()) + " Calling Launch Scan API with Payload: " + requestData);
+            logger.debug(new Timestamp(System.currentTimeMillis()) + " Calling Launch Scan API with Payload: " + requestData);
 
             if (isFailConditionsConfigured) {
-                logger.info("Using Build Failure Conditions configuration: " + criteriaObject);
+                logger.debug("Using Build Failure Conditions configuration: " + criteriaObject);
             }
 
             QualysWASResponse response = apiClient.launchWASScan(requestData);
@@ -116,7 +116,7 @@ public class QualysWASScanService {
             JsonElement respCodeObj = respObj.get("responseCode");
             if (respCodeObj != null && !respCodeObj.getAsString().equals("SUCCESS")) {
                 JsonObject respErr = respObj.getAsJsonObject("responseErrorDetails");
-                logger.info("Server Response: " + respErr.toString());
+                logger.debug("Server Response: " + respErr.toString());
                 throw new Exception("Error while launching new scan. Server returned: " + respErr);
             } else {
                 JsonArray dataArr = respObj.get("data").getAsJsonArray();

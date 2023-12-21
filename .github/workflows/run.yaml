@@ -67,14 +67,14 @@ jobs:
       - name: Run Spring Boot App
         run: java -jar ./GitHubActionsQWas-0.0.1-SNAPSHOT.jar
         env:
-          API_SERVER: ${{ secrets.API_SERVER }}
-          QUALYS_USERNAME: ${{ secrets.QUALYS_USERNAME }}
+          API_SERVER: ${{ vars.API_SERVER }}
+          QUALYS_USERNAME: ${{ vars.QUALYS_USERNAME }}
           QUALYS_PASSWORD: ${{ secrets.QUALYS_PASSWORD }}
           USE_PROXY: ${{ vars.USE_PROXY }}
-          PROXY_SERVER: ${{ secrets.PROXY_SERVER }}
+          PROXY_SERVER: ${{ vars.PROXY_SERVER }}
           PROXY_PORT: ${{ vars.PROXY_PORT }}
           PROXY_USERNAME: ${{ secrets.PROXY_USERNAME }}
-          PROXY_PASSWORD: ${{ secrets.PROXY_PASSWORD }}
+          PROXY_PASSWORD: ${{ vars.PROXY_PASSWORD }}
           WEBAPP_ID: ${{ vars.WEBAPP_ID }}
           SCAN_NAME: ${{ vars.SCAN_NAME }}
           SCAN_TYPE: ${{ vars.SCAN_TYPE }}

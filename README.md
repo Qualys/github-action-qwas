@@ -39,13 +39,13 @@ jobs:
             uses: Qualys/github_action_qwas@main
             id: was
             with:
-              API_SERVER: ${{ secrets.API_SERVER }}
-              QUALYS_USERNAME: ${{ secrets.QUALYS_USERNAME }}
+              API_SERVER: ${{ vars.API_SERVER }}
+              QUALYS_USERNAME: ${{ vars.QUALYS_USERNAME }}
               QUALYS_PASSWORD: ${{ secrets.QUALYS_PASSWORD }}
               USE_PROXY: ${{ vars.USE_PROXY }}
-              PROXY_SERVER: ${{ secrets.PROXY_SERVER }}
+              PROXY_SERVER: ${{ vars.PROXY_SERVER }}
               PROXY_PORT: ${{ vars.PROXY_PORT }}
-              PROXY_USERNAME: ${{ secrets.PROXY_USERNAME }}
+              PROXY_USERNAME: ${{ vars.PROXY_USERNAME }}
               PROXY_PASSWORD: ${{ secrets.PROXY_PASSWORD }}
               WEBAPP_ID: ${{ vars.WEBAPP_ID }}
               SCAN_NAME: ${{ vars.SCAN_NAME }}
@@ -103,13 +103,13 @@ jobs:
         uses: Qualys/github_action_qwas@main
         id: was
         with:
-          API_SERVER: ${{ secrets.API_SERVER }}
-          QUALYS_USERNAME: ${{ secrets.QUALYS_USERNAME }}
+          API_SERVER: ${{ vars.API_SERVER }}
+          QUALYS_USERNAME: ${{ vars.QUALYS_USERNAME }}
           QUALYS_PASSWORD: ${{ secrets.QUALYS_PASSWORD }}
           USE_PROXY: ${{ vars.USE_PROXY }}
-          PROXY_SERVER: ${{ secrets.PROXY_SERVER }}
+          PROXY_SERVER: ${{ vars.PROXY_SERVER }}
           PROXY_PORT: ${{ vars.PROXY_PORT }}
-          PROXY_USERNAME: ${{ secrets.PROXY_USERNAME }}
+          PROXY_USERNAME: ${{ vars.PROXY_USERNAME }}
           PROXY_PASSWORD: ${{ secrets.PROXY_PASSWORD }}
           WEBAPP_ID: ${{ vars.WEBAPP_ID }}
           SCAN_NAME: ${{ vars.SCAN_NAME }}
@@ -164,13 +164,13 @@ jobs:
         uses: Qualys/github_action_qwas@main
         id: was
         with:
-          API_SERVER: ${{ secrets.API_SERVER }}
-          QUALYS_USERNAME: ${{ secrets.QUALYS_USERNAME }}
+          API_SERVER: ${{ vars.API_SERVER }}
+          QUALYS_USERNAME: ${{ vars.QUALYS_USERNAME }}
           QUALYS_PASSWORD: ${{ secrets.QUALYS_PASSWORD }}
           USE_PROXY: ${{ vars.USE_PROXY }}
-          PROXY_SERVER: ${{ secrets.PROXY_SERVER }}
+          PROXY_SERVER: ${{ vars.PROXY_SERVER }}
           PROXY_PORT: ${{ vars.PROXY_PORT }}
-          PROXY_USERNAME: ${{ secrets.PROXY_USERNAME }}
+          PROXY_USERNAME: ${{ vars.PROXY_USERNAME }}
           PROXY_PASSWORD: ${{ secrets.PROXY_PASSWORD }}
           WEBAPP_ID: ${{ vars.WEBAPP_ID }}
           SCAN_NAME: ${{ vars.SCAN_NAME }}
@@ -209,7 +209,7 @@ jobs:
 ## Prerequisites for Qualys WAS GithHub Action
 1. Valid Qualys Credentials and subscription of Qualys CloudView module.
 2. Use of `actions/checkout@v3` with ` fetch-depth: 0` before calling Qualys WAS GitHub action.
-3. `API_SERVER, QUALYS_USERNAME, QUALYS_PASSWORD, PROXY_SERVER, PROXY_USERNAME, PROXY_PASSWORD` to be added in `secrets` and remaining to be added in the `repository variables` of Qualys WAS GitHub action.
+3. `QUALYS_PASSWORD, PROXY_PASSWORD` to be added in `secrets` and remaining to be added in the `repository variables` of Qualys WAS GitHub action.
 
 ## GitHub action Parameters
 

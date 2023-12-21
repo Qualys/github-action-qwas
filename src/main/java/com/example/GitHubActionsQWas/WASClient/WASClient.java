@@ -7,6 +7,8 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -17,11 +19,10 @@ import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.util.Base64;
 import java.util.HashMap;
-import java.util.logging.Logger;
 
 public class WASClient extends WASBaseClient {
     HashMap<String, String> apiMap;
-    Logger logger = Logger.getLogger(WASClient.class.getName());
+    Logger logger = LoggerFactory.getLogger(WASClient.class);
 
     public WASClient(WASAuth auth) {
         super(auth, System.out);
@@ -80,7 +81,7 @@ public class WASClient extends WASBaseClient {
                     String errorResolution = detailsObject.get("errorResolution").getAsString();
                     throw new Exception("[" + responseCodeString + "] " + errorMessage + ", " + errorResolution);
                 }
-                logger.info("response:" + response.response.toString());
+                logger.debug("response:" + response.response.toString());
             }
         } catch (NullPointerException ne) {
             ne.printStackTrace();
@@ -111,12 +112,11 @@ public class WASClient extends WASBaseClient {
                 String scanStatus = scanObj.get("status").getAsString();
 
                 String error = "Error.";
-                try {
+                if (scanObj.has("summary")) {
                     JsonObject summaryObj = scanObj.getAsJsonObject("summary");
                     error = summaryObj.get("resultsStatus").getAsString();
-                } catch (Exception ex) {
-                    logger.info("Could not read error reason from response.");
                 }
+
                 if (scanStatus.equalsIgnoreCase("error") || scanStatus.equalsIgnoreCase("canceled") || (scanStatus.equalsIgnoreCase("finished") && !error.equalsIgnoreCase("finished"))) {
                     logger.info(new Timestamp(System.currentTimeMillis()) + " Scan Status: " + scanStatus + ". Reason: " + error);
                     return error;
@@ -127,7 +127,7 @@ public class WASClient extends WASBaseClient {
             }
 
         } catch (Exception ex) {
-            logger.info(new Timestamp(System.currentTimeMillis()) + " Error getting scan status: " + ex.getMessage());
+            logger.error(new Timestamp(System.currentTimeMillis()) + " Error getting scan status: " + ex.getMessage(), ex);
         }
         return status;
     }
@@ -147,7 +147,7 @@ public class WASClient extends WASBaseClient {
             getRequest.addHeader("Authorization", "Basic " + this.getBasicAuthHeader());
             CloseableHttpResponse response = httpClient.execute(getRequest);
             apiResponse.responseCode = response.getStatusLine().getStatusCode();
-            logger.info("Server returned with ResponseCode: " + apiResponse.responseCode);
+            logger.debug("Server returned with ResponseCode: " + apiResponse.responseCode);
 
             if (response.getEntity() != null) {
                 BufferedReader br = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
@@ -188,7 +188,7 @@ public class WASClient extends WASBaseClient {
 
             HttpPost postRequest = new HttpPost(url.toString());
             postRequest.addHeader("accept", "application/json");
-            postRequest.addHeader("Authorization", "Basic " +  this.getBasicAuthHeader());
+            postRequest.addHeader("Authorization", "Basic " + this.getBasicAuthHeader());
             Gson gson = new Gson();
             if (requestData != null) {
                 postRequest.addHeader("Content-Type", "application/json");
