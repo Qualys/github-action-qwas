@@ -218,7 +218,7 @@ jobs:
 | API_SERVER           |   | YES      | ""      | Input parameter |
 | QUALYS_USERNAME      |   | YES      | ""      | Input parameter |
 | QUALYS_PASSWORD      |   | YES      | ""      | Input parameter |
-| USE_PROXY            |   | YES      | false   | Input parameter |
+| USE_PROXY            |   | NO      | false   | Input parameter |
 | PROXY_SERVER         |   | NO       | ""      | Input parameter |
 | PROXY_PORT           |   | NO       | 0       | Input parameter |
 | PROXY_USERNAME       |   | NO       | ""      | Input parameter |
