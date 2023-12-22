@@ -234,4 +234,3 @@ jobs:
 | SEVERITY_LEVEL     |   | NO       | 0       | Input parameter |
 | FAIL_ON_SCAN_ERROR |   | NO       | false   | Input parameter |
 | WAIT_FOR_RESULT    |   | NO       | true    | Input parameter |
- 
