@@ -103,4 +103,4 @@ jobs:
           
       - name: Check build status
         if: steps.run-app.outcome != 'success'
-        run: echo "The Spring Boot app did not complete successfully."
+        run: exit 1
