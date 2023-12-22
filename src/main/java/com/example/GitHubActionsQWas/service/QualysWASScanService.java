@@ -48,18 +48,8 @@ public class QualysWASScanService {
     private boolean failOnScanError;
 
     public String launchScan() {
-          JsonObject requestData = new JsonObject();
+        JsonObject requestData = new JsonObject();
         try {
-            if (scanType == null || scanType.isEmpty()) {
-                throw new Exception("Scan Type - Required parameter to launch scan is missing.");
-            }
-            if (scanName == null || scanName.isEmpty()) {
-                throw new Exception("Scan Name - Required parameter to launch scan is missing.");
-            }
-            if (webAppId == null || webAppId.isEmpty()) {
-                throw new Exception("Web App ID - Required parameter to launch scan is missing.");
-            }
-
             JsonObject requestObj = new JsonObject();
             JsonObject data = new JsonObject();
 
@@ -102,10 +92,17 @@ public class QualysWASScanService {
             requestData.add("ServiceRequest", requestObj);
 
             List<String> scan_ids = new ArrayList<String>();
-            logger.debug(new Timestamp(System.currentTimeMillis()) + " Calling Launch Scan API with Payload: " + requestData);
+            logger.info(new Timestamp(System.currentTimeMillis()) + " Calling Launch Scan API with Payload: " + requestData);
 
             if (isFailConditionsConfigured) {
-                logger.debug("Using Build Failure Conditions configuration: " + criteriaObject);
+                JsonObject criteria = criteriaObject;
+                for (int i = 1; i <= 5; i++) {
+                    if (criteria.get("failConditions").getAsJsonObject().get("severities").getAsJsonObject().has(i + "")) {
+                        criteria.get("failConditions").getAsJsonObject().get("severities").getAsJsonObject().addProperty(i + "", true);
+                    }
+
+                }
+                logger.info("Using Build Failure Conditions configuration: " + criteria);
             }
 
             QualysWASResponse response = apiClient.launchWASScan(requestData);

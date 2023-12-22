@@ -139,7 +139,7 @@ public class WASClient extends WASBaseClient {
 
         try {
             URL url = this.getAbsoluteUrl(apiPath);
-            this.stream.println("Making Request: " + url.toString());
+            logger.info(new Timestamp(System.currentTimeMillis()) + " Making Request: " + url.toString());
             httpClient = this.getHttpClient();
 
             HttpGet getRequest = new HttpGet(url.toString());
@@ -183,7 +183,7 @@ public class WASClient extends WASBaseClient {
         CloseableHttpClient httpClient = null;
         try {
             URL url = this.getAbsoluteUrl(apiPath);
-            logger.info("Making Request: " + url.toString());
+            logger.info(new Timestamp(System.currentTimeMillis()) + " Making Request: " + url.toString());
             httpClient = this.getHttpClient();
 
             HttpPost postRequest = new HttpPost(url.toString());
