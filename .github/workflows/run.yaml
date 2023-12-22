@@ -101,5 +101,7 @@ jobs:
           name: Qualys_WAS_Scan_Result
           path: ./outputs
           
-      - name: Check spring boot app status
-        run: echo ${{ steps.run-app.outcome }}
+      - name: Check build status
+        run: |
+          if [ ${{ steps.run-app.outcome }} != "success" ]; then
+            exit ${{ steps.run-app.outcome }}
