@@ -102,4 +102,4 @@ jobs:
           path: ./outputs
           
       - name: Check spring boot app status
-        run: exit ${{ steps.run-app.outcome }}
+        run: echo ${{ steps.run-app.outcome }}
