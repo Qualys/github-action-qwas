@@ -103,5 +103,5 @@ jobs:
           
       - name: Check build status
         run: |
-          if [ "${{ steps.run-app.outcome }}" != "success" ]; then
+          if [ ${{ steps.run-app.outcome }} != "success" ]; then
             exit ${{ steps.run-app.outcome }}
