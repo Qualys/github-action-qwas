@@ -66,8 +66,10 @@ jobs:
           
       - name: Run Spring Boot App
         run: java -jar ./GitHubActionsQWas-0.0.1-SNAPSHOT.jar
+        id: run-app
         env:
           API_SERVER: ${{ vars.API_SERVER }}
+          PORTAL_SERVER: ${{ vars.PORTAL_SERVER }}
           QUALYS_USERNAME: ${{ vars.QUALYS_USERNAME }}
           QUALYS_PASSWORD: ${{ secrets.QUALYS_PASSWORD }}
           USE_PROXY: ${{ vars.USE_PROXY }}
@@ -91,9 +93,13 @@ jobs:
           EXCLUDE: ${{ vars.EXCLUDE }}
           FAIL_ON_SCAN_ERROR: ${{ vars.FAIL_ON_SCAN_ERROR }}
           WAIT_FOR_RESULT: ${{ vars.WAIT_FOR_RESULT }}
-          
+        continue-on-error: true
+      
       - name: Upload Scan Report
         uses: actions/upload-artifact@v3
         with:
           name: Qualys_WAS_Scan_Result
           path: ./outputs
+          
+      - name: Check spring boot app status
+        run: exit ${{ steps.run-app.outcome }}

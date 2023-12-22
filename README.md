@@ -40,6 +40,7 @@ jobs:
             id: was
             with:
               API_SERVER: ${{ vars.API_SERVER }}
+              PORTAL_SERVER: ${{ vars.PORTAL_SERVER }}
               QUALYS_USERNAME: ${{ vars.QUALYS_USERNAME }}
               QUALYS_PASSWORD: ${{ secrets.QUALYS_PASSWORD }}
               USE_PROXY: ${{ vars.USE_PROXY }}
@@ -102,6 +103,7 @@ jobs:
         id: was
         with:
           API_SERVER: ${{ vars.API_SERVER }}
+          PORTAL_SERVER: ${{ vars.PORTAL_SERVER }}
           QUALYS_USERNAME: ${{ vars.QUALYS_USERNAME }}
           QUALYS_PASSWORD: ${{ secrets.QUALYS_PASSWORD }}
           USE_PROXY: ${{ vars.USE_PROXY }}
@@ -161,6 +163,7 @@ jobs:
         id: was
         with:
           API_SERVER: ${{ vars.API_SERVER }}
+          PORTAL_SERVER: ${{ vars.PORTAL_SERVER }}
           QUALYS_USERNAME: ${{ vars.QUALYS_USERNAME }}
           QUALYS_PASSWORD: ${{ secrets.QUALYS_PASSWORD }}
           USE_PROXY: ${{ vars.USE_PROXY }}
@@ -207,27 +210,28 @@ jobs:
 
 ## GitHub action Parameters
 
-| Parameter            | Description | Required | Default | Type            |
-|----------------------| -------------------------------------------------------------------------------------------------------- |----------|---------|-----------------|
-| API_SERVER           |   | YES      | ""      | Input parameter |
-| QUALYS_USERNAME      |   | YES      | ""      | Input parameter |
-| QUALYS_PASSWORD      |   | YES      | ""      | Input parameter |
-| USE_PROXY            |   | YES      | false   | Input parameter |
-| PROXY_SERVER         |   | NO       | ""      | Input parameter |
-| PROXY_PORT           |   | NO       | 0       | Input parameter |
-| PROXY_USERNAME       |   | NO       | ""      | Input parameter |
-| PROXY_PASSWORD       |   | NO       | ""      | Input parameter |
-| WEBAPP_ID            |   | YES      | ""      | Input parameter |
-| SCAN_NAME            |   | YES      | ""      | Input parameter |
-| SCAN_TYPE            |   | YES      | ""      | Input parameter |
-| AUTH_RECORD          |   | NO       | false   | Input parameter |
-| AUTH_RECORD_ID       |   | NO       | ""      | Input parameter |
-| OPTION_PROFILE       |   | NO       | false   | Input parameter |
-| OPTION_PROFILE_ID    |   | NO       | ""      | Input parameter |
-| CANCEL_OPTION        |   | NO       | false   | Input parameter |
-| CANCEL_HOURS         |   | NO       | ""      | Input parameter |
-| SEVERITY_CHECK       |   | NO       | false   | Input parameter |
-| SEVERITY_LEVEL       |   | NO       | 0       | Input parameter |
-| FAIL_ON_SCAN_ERROR   |   | NO       | false   | Input parameter |
-| WAIT_FOR_RESULT      |   | NO       | true    | Input parameter |
+| Parameter          | Description | Required | Default | Type            |
+|--------------------| -------------------------------------------------------------------------------------------------------- |----------|---------|-----------------|
+| API_SERVER         |   | YES      | ""      | Input parameter |
+| PORTAL_SERVER      |   | YES      | ""      | Input parameter |
+| QUALYS_USERNAME    |   | YES      | ""      | Input parameter |
+| QUALYS_PASSWORD    |   | YES      | ""      | Input parameter |
+| USE_PROXY          |   | YES      | false   | Input parameter |
+| PROXY_SERVER       |   | NO       | ""      | Input parameter |
+| PROXY_PORT         |   | NO       | 0       | Input parameter |
+| PROXY_USERNAME     |   | NO       | ""      | Input parameter |
+| PROXY_PASSWORD     |   | NO       | ""      | Input parameter |
+| WEBAPP_ID          |   | YES      | ""      | Input parameter |
+| SCAN_NAME          |   | YES      | ""      | Input parameter |
+| SCAN_TYPE          |   | YES      | ""      | Input parameter |
+| AUTH_RECORD        |   | NO       | false   | Input parameter |
+| AUTH_RECORD_ID     |   | NO       | ""      | Input parameter |
+| OPTION_PROFILE     |   | NO       | false   | Input parameter |
+| OPTION_PROFILE_ID  |   | NO       | ""      | Input parameter |
+| CANCEL_OPTION      |   | NO       | false   | Input parameter |
+| CANCEL_HOURS       |   | NO       | ""      | Input parameter |
+| SEVERITY_CHECK     |   | NO       | false   | Input parameter |
+| SEVERITY_LEVEL     |   | NO       | 0       | Input parameter |
+| FAIL_ON_SCAN_ERROR |   | NO       | false   | Input parameter |
+| WAIT_FOR_RESULT    |   | NO       | true    | Input parameter |
  
