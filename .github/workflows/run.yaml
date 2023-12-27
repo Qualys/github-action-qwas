@@ -69,7 +69,6 @@ jobs:
         id: run-app
         env:
           API_SERVER: ${{ vars.API_SERVER }}
-          PORTAL_SERVER: ${{ vars.PORTAL_SERVER }}
           QUALYS_USERNAME: ${{ vars.QUALYS_USERNAME }}
           QUALYS_PASSWORD: ${{ secrets.QUALYS_PASSWORD }}
           USE_PROXY: ${{ vars.USE_PROXY }}
