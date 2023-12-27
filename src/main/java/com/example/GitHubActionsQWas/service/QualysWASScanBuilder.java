@@ -71,7 +71,6 @@ public class QualysWASScanBuilder {
     public QualysWASScanBuilder(Environment environment) {
         this.environment = environment;
         this.apiServer = environment.getProperty("API_SERVER", "");
-        this.portalServer = environment.getProperty("PORTAL_SERVER", "");
         this.qualysUsername = environment.getProperty("QUALYS_USERNAME", "");
         this.qualysPasssword = environment.getProperty("QUALYS_PASSWORD", "");
         this.useProxy = environment.getProperty("USE_PROXY", Boolean.class, false);
@@ -194,7 +193,7 @@ public class QualysWASScanBuilder {
      *
      */
     public void launchWebApplicationScan() {
-        String portalUrl = portalServer;
+        String portalUrl = apiServer.replace("api","guard");
 
         logger.info("Using Qualys API Server: " + apiServer);
 
@@ -247,20 +246,22 @@ public class QualysWASScanBuilder {
                                 JsonObject evaluationResult = evaluateFailurePolicy(result);
                                 buildPassed = evaluationResult.get("passed").getAsBoolean();
                                 if (!buildPassed) {
+                                    logger.info(message3);
+                                    logger.info(message4);
                                     String failureMessage = evaluationResult.get("failureMessage").getAsString();
                                     logger.error(failureMessage);
                                     Helper.dumpDataIntoFile(failureMessage, "Qualys_Wasscan_" + scanId + ".txt");
                                     System.exit(1);
                                 }
                             }
-                            logger.info(message3);
-                            logger.info(message4);
                         } else {
                             String message = "API Error - Could not fetch scan result for scan id: " + scanId;
                             logger.error(message);
                             Helper.dumpDataIntoFile(message, "Qualys_Wasscan_" + scanId + ".txt");
                             System.exit(1);
                         }
+                        logger.info(message3);
+                        logger.info(message4);
                     }
                 } else {
                     logger.info(message3);
