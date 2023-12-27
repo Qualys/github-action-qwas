@@ -341,7 +341,6 @@ public class QualysWASScanBuilder {
 
     public boolean isMandatoryParametersSet() {
         return !(this.apiServer == null || this.apiServer.isEmpty()
-                || this.portalServer == null || this.portalServer.isEmpty()
                 || this.qualysUsername == null || this.qualysUsername.isEmpty()
                 || this.qualysPasssword == null || this.qualysPasssword.isEmpty()
                 || webAppId == null || webAppId.isEmpty()
