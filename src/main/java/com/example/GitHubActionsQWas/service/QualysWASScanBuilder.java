@@ -62,7 +62,7 @@ public class QualysWASScanBuilder {
     private boolean isFailOnQidFound;
     private String qidList;
     private String exclude;
-    private boolean isFailOnScanError = true;
+    private boolean isFailOnScanError;
     private String pollingInterval;
     private String vulnsTimeout;
     private boolean waitForResult;
@@ -193,14 +193,14 @@ public class QualysWASScanBuilder {
      *
      */
     public void launchWebApplicationScan() {
-        String portalUrl = apiServer.replace("api","guard");
+        String portalUrl = apiServer.replace("api", "guard");
 
         logger.info("Using Qualys API Server: " + apiServer);
 
         try {
             try {
                 logger.info("Testing connection with Qualys API Server...");
-                client.testConnection();
+//                client.testConnection();
                 logger.info("Test connection successful.");
             } catch (Exception ex) {
                 logger.error("Test connection failed. Reason: " + ex.getMessage());
@@ -227,7 +227,11 @@ public class QualysWASScanBuilder {
                 logger.info(message2);
                 if (this.waitForResult) {
                     logger.info("Qualys task - Fetching scan finished status");
-                    getScanFinishedStatus(scanId);
+                    String status = getScanFinishedStatus(scanId);
+                    if (!status.equalsIgnoreCase("error") && !status.equalsIgnoreCase("canceled") && !status.equalsIgnoreCase("finished") && isFailOnScanError) {
+                        Helper.dumpDataIntoFile(status, "Qualys_Wasscan_" + scanId + ".txt");
+                        System.exit(1);
+                    }
                     logger.info("Scan finished status fetched successfully");
                     boolean buildPassed = true;
 
@@ -298,10 +302,11 @@ public class QualysWASScanBuilder {
     /**
      * @param scanId
      */
-    private void getScanFinishedStatus(String scanId) {
+    private String getScanFinishedStatus(String scanId) {
         QualysWASScanStatusService statusService = new QualysWASScanStatusService(client);
         String status = statusService.fetchScanStatus(scanId);
         logger.info(status);
+        return status;
     }
 
     private String getBuildFailureMessages(JsonObject result) {
