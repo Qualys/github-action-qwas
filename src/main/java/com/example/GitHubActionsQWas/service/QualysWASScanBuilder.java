@@ -200,7 +200,7 @@ public class QualysWASScanBuilder {
         try {
             try {
                 logger.info("Testing connection with Qualys API Server...");
-//                client.testConnection();
+                client.testConnection();
                 logger.info("Test connection successful.");
             } catch (Exception ex) {
                 logger.error("Test connection failed. Reason: " + ex.getMessage());
