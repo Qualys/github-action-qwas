@@ -97,7 +97,7 @@ public class QualysWASScanService {
             if (isFailConditionsConfigured) {
                 JsonObject criteria = criteriaObject;
                 for (int i = 1; i <= 5; i++) {
-                    if (criteria.get("failConditions").getAsJsonObject().get("severities").getAsJsonObject().has(i + "")) {
+                    if (criteria.get("failConditions").getAsJsonObject().has("severities") && criteria.get("failConditions").getAsJsonObject().get("severities").getAsJsonObject().has(i + "")) {
                         criteria.get("failConditions").getAsJsonObject().get("severities").getAsJsonObject().addProperty(i + "", true);
                     }
 
