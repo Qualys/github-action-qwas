@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.stream.Collectors;
 
 public class QualysWASScanResultParser {
     private static final Logger logger = LoggerFactory.getLogger(QualysWASScanResultParser.class);
@@ -190,15 +189,15 @@ public class QualysWASScanResultParser {
                     if (!this.qidExcludeFound.contains(qid)) {
                         this.qidExcludeFound.add(qid);
                     }
-                    logger.info("You have provided QID: " + qid + " as a member of exclude list, hence skipping it.");
                 }
             }// for vulns
-
 //      TODO:  remove qids from vulnsArr
 //      for (int qid : this.qidExcludeFound) {
 //          this.vulnsArr.remove(qid);
 //      }
-
+            for (int qid : this.qidExcludeList) {
+                logger.info("You have provided QID: " + qid + " as a member of exclude list, hence skipping it.");
+            }
         } catch (Exception ex) {
             logger.error("something went wrong - Reason: " + ex.getMessage());
         }
