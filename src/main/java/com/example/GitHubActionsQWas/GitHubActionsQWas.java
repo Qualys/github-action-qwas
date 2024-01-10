@@ -14,7 +14,6 @@ public class GitHubActionsQWas {
     private static final Logger logger = LoggerFactory.getLogger(GitHubActionsQWas.class);
 
     public static void main(String[] args) {
-
         ConfigurableApplicationContext ctx = SpringApplication.run(GitHubActionsQWas.class, args);
         Environment environment = ctx.getEnvironment();
         QualysWASScanBuilder builder = new QualysWASScanBuilder(environment);

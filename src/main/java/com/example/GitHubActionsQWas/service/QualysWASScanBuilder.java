@@ -193,7 +193,7 @@ public class QualysWASScanBuilder {
      *
      */
     public void launchWebApplicationScan() {
-        String portalUrl = apiServer.replace("api", "guard");
+        portalServer = apiServer.replace("api", "guard");
 
         logger.info("Using Qualys API Server: " + apiServer);
 
@@ -214,7 +214,7 @@ public class QualysWASScanBuilder {
                 isFailConditionConfigured = true;
             }
 
-            QualysWASScanService service = QualysWASScanService.builder().webAppId(webAppId).scanName(scanName).scanType(scanType).authRecord(authRecord).authRecordId(authRecordId).optionProfile(optionProfile).optionProfileId(optionProfileId).cancelOptions(cancelOptions).cancelHours(cancelHours).isFailConditionsConfigured(isFailConditionConfigured).pollingIntervalForVulns(Helper.setTimeoutInMinutes("pollingInterval", DEFAULT_POLLING_INTERVAL_FOR_VULNS, pollingInterval)).vulnsTimeout(Helper.setTimeoutInMinutes("vulnsTimeout", DEFAULT_TIMEOUT_FOR_VULNS, vulnsTimeout)).criteriaObject(getCriteriaAsJsonObject()).apiServer(apiServer).apiUser(qualysUsername).apiPass(qualysPasssword).useProxy(useProxy).proxyServer(proxyServer).proxyPort(proxyPort).proxyUsername(proxyUsername).proxyPassword(proxyPassword).portalUrl(portalUrl).failOnScanError(isFailOnScanError).apiClient(client).build();
+            QualysWASScanService service = QualysWASScanService.builder().webAppId(webAppId).scanName(scanName).scanType(scanType).authRecord(authRecord).authRecordId(authRecordId).optionProfile(optionProfile).optionProfileId(optionProfileId).cancelOptions(cancelOptions).cancelHours(cancelHours).isFailConditionsConfigured(isFailConditionConfigured).pollingIntervalForVulns(Helper.setTimeoutInMinutes("pollingInterval", DEFAULT_POLLING_INTERVAL_FOR_VULNS, pollingInterval)).vulnsTimeout(Helper.setTimeoutInMinutes("vulnsTimeout", DEFAULT_TIMEOUT_FOR_VULNS, vulnsTimeout)).criteriaObject(getCriteriaAsJsonObject()).apiServer(apiServer).apiUser(qualysUsername).apiPass(qualysPasssword).useProxy(useProxy).proxyServer(proxyServer).proxyPort(proxyPort).proxyUsername(proxyUsername).proxyPassword(proxyPassword).portalUrl(portalServer).failOnScanError(isFailOnScanError).apiClient(client).build();
 
             logger.info("Qualys task - Started Launching web app scanning with WAS");
             String scanId = service.launchScan();
@@ -222,16 +222,12 @@ public class QualysWASScanBuilder {
                 String message1 = "Launching scan with 'WAIT_FOR_RESULT:" + waitForResult + "'";
                 String message2 = "Scan successfully launched with scan id: " + scanId;
                 String message3 = "Please switch to WAS Classic UI and Check for report...";
-                String message4 = "To check scan result, please follow the url: " + portalUrl + "/portal-front/module/was/#forward=/module/was/&scan-report=" + scanId;
+                String message4 = "To check scan result, please follow the url: " + portalServer + "/portal-front/module/was/#forward=/module/was/&scan-report=" + scanId;
                 logger.info(message1);
                 logger.info(message2);
                 if (this.waitForResult) {
                     logger.info("Qualys task - Fetching scan finished status");
                     String status = getScanFinishedStatus(scanId);
-                    if (!status.equalsIgnoreCase("error") && !status.equalsIgnoreCase("canceled") && !status.equalsIgnoreCase("finished") && isFailOnScanError) {
-                        Helper.dumpDataIntoFile(status, "Qualys_Wasscan_" + scanId + ".txt");
-                        System.exit(1);
-                    }
                     logger.info("Scan finished status fetched successfully");
                     boolean buildPassed = true;
 
@@ -245,6 +241,10 @@ public class QualysWASScanBuilder {
                         if (result.has("ServiceResponse") && result.get("ServiceResponse").getAsJsonObject().has("responseCode") && result.get("ServiceResponse").getAsJsonObject().get("responseCode").getAsString().equalsIgnoreCase("SUCCESS")) {
                             data.get("ServiceResponse").getAsJsonObject().getAsJsonArray("data").get(0).getAsJsonObject().get("WasScan").getAsJsonObject().remove("igs").getAsJsonObject();
                             data.get("ServiceResponse").getAsJsonObject().getAsJsonArray("data").get(0).getAsJsonObject().get("WasScan").getAsJsonObject().addProperty("ScanId", scanId);
+                            if (!status.equalsIgnoreCase("error") && !status.equalsIgnoreCase("canceled") && !status.equalsIgnoreCase("finished") && isFailOnScanError) {
+                                Helper.dumpDataIntoFile(gson.toJson(data), "Qualys_Wasscan_" + scanId + ".txt");
+                                System.exit(1);
+                            }
                             Helper.dumpDataIntoFile(gson.toJson(data), fileName);
                             if (isFailConditionConfigured) {
                                 JsonObject evaluationResult = evaluateFailurePolicy(result);
@@ -304,7 +304,7 @@ public class QualysWASScanBuilder {
      */
     private String getScanFinishedStatus(String scanId) {
         QualysWASScanStatusService statusService = new QualysWASScanStatusService(client);
-        String status = statusService.fetchScanStatus(scanId);
+        String status = statusService.fetchScanStatus(scanId, portalServer);
         logger.info(status);
         return status;
     }
@@ -330,14 +330,14 @@ public class QualysWASScanBuilder {
                 if (severity.has("configured") && !severity.get("configured").isJsonNull() && severity.get("configured").getAsInt() != -1) {
                     sevFound += "Severity " + i + "; Count: " + (severity.get("found").isJsonNull() ? 0 : severity.get("found").getAsString()) + "\n";
                     sevConfigured += "Severity " + i + ": " + (severity.get("configured").isJsonNull() ? "false" : "true") + "\n";
-                    boolean sevPass = severity.get("result").getAsBoolean();
-                    if (!sevPass) {
+                    severityFailed = severity.get("result").getAsBoolean();
+                    if (!severityFailed) {
                         severityFailed = true;
                     }
                 }
             }
         }
-        if (!severityFailed) {
+        if (severityFailed) {
             failureMessages.add("The vulnerabilities count by severity exceeded one of the configured threshold value : " + sevConfigured + sevFound);
         }
 
