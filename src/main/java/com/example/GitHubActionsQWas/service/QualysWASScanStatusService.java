@@ -31,7 +31,7 @@ public class QualysWASScanStatusService {
             while ((status = client.getScanFinishedStatus(scanId)) == null) {
                 long endTime = System.currentTimeMillis();
                 if ((endTime - startTime) > timeoutInMillis) {
-                    logger.info(new Timestamp(System.currentTimeMillis()) + " Failed to get scan result; timeout of " + TIMEOUT + " minutes reached.");
+                    logger.info("Failed to get scan result; timeout of " + TIMEOUT + " minutes reached.");
                     String message1 = "Failed to get scan result; timeout of " + TIMEOUT + " minutes reached.";
                     String message2 = "Please switch to WAS Classic UI and Check for report...";
                     String message3 = "To check scan result, please follow the url: " + portalUrl + "/portal-front/module/was/#forward=/module/was/&scan-report=" + scanId;
@@ -40,7 +40,7 @@ public class QualysWASScanStatusService {
                     System.exit(1);
                 } else {
                     try {
-                        logger.info(new Timestamp(System.currentTimeMillis()) + " Waiting for " + INTERVAL + " minute(s) before making next attempt for scanResult of scanId:" + scanId + "...");
+                        logger.info("Waiting for " + INTERVAL + " minute(s) before making next attempt for scanResult of scanId:" + scanId + "...");
                         Thread.sleep(intervalInMillis);
                     } catch (Exception ex) {
                         logger.info(ex.getMessage());
