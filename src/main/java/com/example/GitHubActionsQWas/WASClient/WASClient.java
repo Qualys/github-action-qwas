@@ -118,16 +118,16 @@ public class WASClient extends WASBaseClient {
                 }
 
                 if (scanStatus.equalsIgnoreCase("error") || scanStatus.equalsIgnoreCase("canceled") || (scanStatus.equalsIgnoreCase("finished") && !error.equalsIgnoreCase("finished"))) {
-                    logger.info(new Timestamp(System.currentTimeMillis()) + " Scan Status: " + scanStatus + ". Reason: " + error);
+                    logger.info("Scan Status: " + scanStatus + ". Reason: " + error);
                     return error;
                 } else {
-                    logger.info(new Timestamp(System.currentTimeMillis()) + " Scan Status: " + scanStatus);
+                    logger.info("Scan Status: " + scanStatus);
                 }
                 return (scanStatus.equalsIgnoreCase("error") || scanStatus.equalsIgnoreCase("canceled") || scanStatus.equalsIgnoreCase("finished")) ? scanStatus : null;
             }
 
         } catch (Exception ex) {
-            logger.error(new Timestamp(System.currentTimeMillis()) + " Error getting scan status: " + ex.getMessage(), ex);
+            logger.error("Error getting scan status: " + ex.getMessage(), ex);
         }
         return status;
     }
@@ -139,7 +139,7 @@ public class WASClient extends WASBaseClient {
 
         try {
             URL url = this.getAbsoluteUrl(apiPath);
-            logger.info(new Timestamp(System.currentTimeMillis()) + " Making Request: " + url.toString());
+            logger.info("Making Request: " + url.toString());
             httpClient = this.getHttpClient();
 
             HttpGet getRequest = new HttpGet(url.toString());
@@ -183,7 +183,7 @@ public class WASClient extends WASBaseClient {
         CloseableHttpClient httpClient = null;
         try {
             URL url = this.getAbsoluteUrl(apiPath);
-            logger.info(new Timestamp(System.currentTimeMillis()) + " Making Request: " + url.toString());
+            logger.info("Making Request: " + url.toString());
             httpClient = this.getHttpClient();
 
             HttpPost postRequest = new HttpPost(url.toString());
