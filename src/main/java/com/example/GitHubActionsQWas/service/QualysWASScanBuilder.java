@@ -4,7 +4,6 @@ import com.example.GitHubActionsQWas.WASAuth.WASAuth;
 import com.example.GitHubActionsQWas.WASClient.WASClient;
 import com.example.GitHubActionsQWas.util.Helper;
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
@@ -152,17 +151,17 @@ public class QualysWASScanBuilder {
         JsonObject failConditionsObj = new JsonObject();
         Gson gson = new Gson();
         if (isFailOnQidFound) {
-            if (this.qidList == null || this.qidList.isEmpty()) {
-                JsonElement empty = new JsonArray();
-                failConditionsObj.add("qids", empty);
-            } else {
-                List<String> qids = new ArrayList<>(List.of(this.qidList.split(",")));
-                qids.replaceAll(String::trim);
-                JsonElement element = gson.toJsonTree(qids, new TypeToken<List<String>>() {
-                }.getType());
-                failConditionsObj.add("qids", element);
+            if (this.qidList != null) {
+                if (!this.qidList.isEmpty()) {
+                    List<String> qids = new ArrayList<>(List.of(this.qidList.split(",")));
+                    qids.replaceAll(String::trim);
+                    JsonElement element = gson.toJsonTree(qids, new TypeToken<List<String>>() {
+                    }.getType());
+                    failConditionsObj.add("qids", element);
+                }
             }
         }
+
         if (isFailOnSevereVulns) {
             JsonObject severities = new JsonObject();
             if (this.isSev5Vulns) severities.addProperty("5", this.severity5Limit);
@@ -170,22 +169,24 @@ public class QualysWASScanBuilder {
             if (this.isSev3Vulns) severities.addProperty("3", this.severity3Limit);
             if (this.isSev2Vulns) severities.addProperty("2", this.severity2Limit);
             if (this.isSev1Vulns) severities.addProperty("1", this.severity1Limit);
+
             failConditionsObj.add("severities", severities);
+
+            if (this.exclude != null) {
+                if (!this.exclude.isEmpty()) {
+                    List<String> excludeQids = new ArrayList<>(List.of(this.exclude.split(",")));
+                    excludeQids.replaceAll(String::trim);
+                    JsonElement element = gson.toJsonTree(excludeQids, new TypeToken<List<String>>() {
+                    }.getType());
+                    failConditionsObj.add("excludeQids", element);
+                }
+            }
         }
+
         if (isFailOnScanError) {
             failConditionsObj.addProperty("failOnScanError", true);
         }
 
-        if (this.exclude == null || this.exclude.isEmpty()) {
-            JsonElement empty = new JsonArray();
-            failConditionsObj.add("excludeQids", empty);
-        } else {
-            List<String> excludeQids = new ArrayList<>(List.of(this.exclude.split(",")));
-            excludeQids.replaceAll(String::trim);
-            JsonElement element = gson.toJsonTree(excludeQids, new TypeToken<List<String>>() {
-            }.getType());
-            failConditionsObj.add("excludeQids", element);
-        }
         obj.add("failConditions", failConditionsObj);
         logger.debug("Criteria: " + obj.toString());
         return obj;
