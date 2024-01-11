@@ -61,6 +61,7 @@ jobs:
               EXCLUDE: ${{ vars.EXCLUDE }}
               FAIL_ON_SCAN_ERROR: ${{ vars.FAIL_ON_SCAN_ERROR }}
               WAIT_FOR_RESULT: ${{ vars.WAIT_FOR_RESULT }}
+              INTERVAL: ${{ vars.INTERVAL }}
 
 #      Checkout the repository to download the scan result in your repository.
 #      if repository is private then add PAT (personal access token) token in the checkout step.:
@@ -123,6 +124,7 @@ jobs:
           EXCLUDE: ${{ vars.EXCLUDE }}
           FAIL_ON_SCAN_ERROR: ${{ vars.FAIL_ON_SCAN_ERROR }}
           WAIT_FOR_RESULT: ${{ vars.WAIT_FOR_RESULT }}
+          INTERVAL: ${{ vars.INTERVAL }}
 
 #      Checkout the repository to download the scan result in your repository.
 #      if repository is private then add PAT (personal access token) token in the checkout step.:
@@ -182,6 +184,7 @@ jobs:
           EXCLUDE: ${{ vars.EXCLUDE }}
           FAIL_ON_SCAN_ERROR: ${{ vars.FAIL_ON_SCAN_ERROR }}
           WAIT_FOR_RESULT: ${{ vars.WAIT_FOR_RESULT }}
+          INTERVAL: ${{ vars.INTERVAL }}
           
 #      Checkout the repository to download the scan result in your repository.
 #      if repository is private then add PAT (personal access token) token in the checkout step.:
@@ -230,3 +233,4 @@ jobs:
 | SEVERITY_LEVEL     |   | NO       | 0       | Input parameter |
 | FAIL_ON_SCAN_ERROR |   | NO       | false   | Input parameter |
 | WAIT_FOR_RESULT    |   | NO       | true    | Input parameter |
+| INTERVAL           |   | YES      | 5       | Input parameter |
