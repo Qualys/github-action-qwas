@@ -264,7 +264,7 @@ public class QualysWASScanBuilder {
                         } else {
                             String message = "API Error - Could not fetch scan result for scan id: " + scanId;
                             logger.error(message);
-                            Helper.dumpDataIntoFile(message, "Qualys_Wasscan_" + scanId + ".txt");
+                            Helper.dumpDataIntoFile(message, "Qualys_Wasscan_" + scanId + ".json");
                             System.exit(1);
                         }
                         logger.info(message3);
