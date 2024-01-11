@@ -49,6 +49,7 @@ public class QualysWASScanBuilder {
     private boolean isFailOnSevereVulns = true;
     private boolean severityCheck;
     private int severityLevel;
+    private int interval;
     private int severity1Limit;
     private int severity2Limit;
     private int severity3Limit;
@@ -94,6 +95,7 @@ public class QualysWASScanBuilder {
         this.exclude = environment.getProperty("EXCLUDE", "");
         this.isFailOnScanError = environment.getProperty("FAIL_ON_SCAN_ERROR", Boolean.class, false);
         this.waitForResult = environment.getProperty("WAIT_FOR_RESULT", Boolean.class, true);
+        this.interval = environment.getProperty("INTERVAL", Integer.class, 5);
         this.severity1Limit = 0;
         this.severity2Limit = 0;
         this.severity3Limit = 0;
@@ -304,7 +306,7 @@ public class QualysWASScanBuilder {
      */
     private String getScanFinishedStatus(String scanId) {
         QualysWASScanStatusService statusService = new QualysWASScanStatusService(client);
-        String status = statusService.fetchScanStatus(scanId, portalServer);
+        String status = statusService.fetchScanStatus(scanId, portalServer, interval);
         logger.info(status);
         return status;
     }
