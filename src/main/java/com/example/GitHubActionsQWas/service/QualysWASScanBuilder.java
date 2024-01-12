@@ -12,7 +12,6 @@ import lombok.Setter;
 import org.apache.tomcat.util.buf.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 
 import java.util.ArrayList;
@@ -25,8 +24,7 @@ public class QualysWASScanBuilder {
     private final static int PROXY_PORT = 80;
     private final static int DEFAULT_POLLING_INTERVAL_FOR_VULNS = 5; //5 minutes
     private final static int DEFAULT_TIMEOUT_FOR_VULNS = 60 * 24;
-    @Autowired
-    private final Environment environment;
+    private Environment environment;
     private String apiServer;
     private String portalServer;
     private String qualysUsername;
@@ -70,41 +68,69 @@ public class QualysWASScanBuilder {
     private WASClient client;
 
     public QualysWASScanBuilder(Environment environment) {
-        this.environment = environment;
-        this.apiServer = environment.getProperty("API_SERVER", "");
-        this.qualysUsername = environment.getProperty("QUALYS_USERNAME", "");
-        this.qualysPasssword = environment.getProperty("QUALYS_PASSWORD", "");
-        this.useProxy = environment.getProperty("USE_PROXY", Boolean.class, false);
-        this.proxyServer = environment.getProperty("PROXY_SERVER", "");
-        this.proxyPort = environment.getProperty("PROXY_PORT", Integer.class, 0);
-        this.proxyUsername = environment.getProperty("PROXY_USERNAME", "");
-        this.proxyPassword = environment.getProperty("PROXY_PASSWORD", "");
-        this.webAppId = environment.getProperty("WEBAPP_ID", "");
-        this.scanName = environment.getProperty("SCAN_NAME", "");
-        this.scanType = environment.getProperty("SCAN_TYPE", "");
-        this.authRecord = environment.getProperty("AUTH_RECORD", "");
-        this.authRecordId = environment.getProperty("AUTH_RECORD_ID", "");
-        this.optionProfile = environment.getProperty("OPTION_PROFILE", "");
-        this.optionProfileId = environment.getProperty("OPTION_PROFILE_ID", "");
-        this.cancelOptions = environment.getProperty("CANCEL_OPTION", "");
-        this.cancelHours = environment.getProperty("CANCEL_HOURS", "");
-        this.severityCheck = environment.getProperty("SEVERITY_CHECK", Boolean.class, false);
-        this.severityLevel = environment.getProperty("SEVERITY_LEVEL", Integer.class, 0);
-        this.isFailOnQidFound = environment.getProperty("IS_FAIL_ON_QID_FOUND", Boolean.class, false);
-        this.qidList = environment.getProperty("QID_LIST", "");
-        this.exclude = environment.getProperty("EXCLUDE", "");
-        this.isFailOnScanError = environment.getProperty("FAIL_ON_SCAN_ERROR", Boolean.class, false);
-        this.waitForResult = environment.getProperty("WAIT_FOR_RESULT", Boolean.class, true);
-        this.interval = environment.getProperty("INTERVAL", Integer.class, 5);
-        this.timeout = environment.getProperty("TIMEOUT", Integer.class, (60 * 5) + 50);
-        this.severity1Limit = 0;
-        this.severity2Limit = 0;
-        this.severity3Limit = 0;
-        this.severity4Limit = 0;
-        this.severity5Limit = 0;
-        initWASClient();
-        if (severityCheck) {
-            assignSeverities(severityLevel);
+        try {
+            this.environment = environment;
+            this.apiServer = environment.getProperty("API_SERVER", "");
+            this.qualysUsername = environment.getProperty("QUALYS_USERNAME", "");
+            this.qualysPasssword = environment.getProperty("QUALYS_PASSWORD", "");
+            this.useProxy = environment.getProperty("USE_PROXY", Boolean.class, false);
+            this.proxyServer = environment.getProperty("PROXY_SERVER", "");
+            this.proxyPort = environment.getProperty("PROXY_PORT", Integer.class, 0);
+            this.proxyUsername = environment.getProperty("PROXY_USERNAME", "");
+            this.proxyPassword = environment.getProperty("PROXY_PASSWORD", "");
+            this.webAppId = environment.getProperty("WEBAPP_ID", "");
+            this.scanName = environment.getProperty("SCAN_NAME", "");
+            this.scanType = environment.getProperty("SCAN_TYPE", "");
+            this.authRecord = environment.getProperty("AUTH_RECORD", "");
+            this.authRecordId = environment.getProperty("AUTH_RECORD_ID", "");
+            this.optionProfile = environment.getProperty("OPTION_PROFILE", "");
+            this.optionProfileId = environment.getProperty("OPTION_PROFILE_ID", "");
+            this.cancelOptions = environment.getProperty("CANCEL_OPTION", "");
+            this.cancelHours = environment.getProperty("CANCEL_HOURS", "");
+            this.severityCheck = environment.getProperty("SEVERITY_CHECK", Boolean.class, false);
+            this.severityLevel = environment.getProperty("SEVERITY_LEVEL", Integer.class, 0);
+            this.isFailOnQidFound = environment.getProperty("IS_FAIL_ON_QID_FOUND", Boolean.class, false);
+            this.qidList = environment.getProperty("QID_LIST", "");
+            this.exclude = environment.getProperty("EXCLUDE", "");
+            this.isFailOnScanError = environment.getProperty("FAIL_ON_SCAN_ERROR", Boolean.class, false);
+            this.waitForResult = environment.getProperty("WAIT_FOR_RESULT", Boolean.class, true);
+            this.interval = environment.getProperty("INTERVAL", Integer.class, 5);
+            this.timeout = environment.getProperty("TIMEOUT", Integer.class, (60 * 5) + 50);
+            this.severity1Limit = 0;
+            this.severity2Limit = 0;
+            this.severity3Limit = 0;
+            this.severity4Limit = 0;
+            this.severity5Limit = 0;
+
+            validateParameters();
+
+            initWASClient();
+            if (severityCheck) {
+                assignSeverities(severityLevel);
+            }
+        } catch (Exception ex) {
+            logger.error("Something went wrong. Reason: " + ex.getCause());
+            System.exit(1);
+        }
+    }
+
+    private void validateParameters() {
+        if (this.authRecord == null || ((!this.authRecord.equalsIgnoreCase("none") && !this.authRecord.equalsIgnoreCase("useDefault") && !this.authRecord.equalsIgnoreCase("other")))) {
+            String message = "Invalid value for AUTH_RECORD. Valid values are none, useDefault, other";
+            logger.error(message);
+            Helper.dumpDataIntoFile(message, "Qualys_Wasscan_" + this.webAppId + ".txt");
+            System.exit(1);
+        }
+
+        if (this.optionProfile == null || ((!this.optionProfile.equalsIgnoreCase("useDefault") && !this.optionProfile.equalsIgnoreCase("other")))) {
+            String message = "Invalid value for OPTION_PROFILE. Valid values are useDefault, other";
+            logger.error(message);
+            Helper.dumpDataIntoFile(message, "Qualys_Wasscan_" + this.webAppId + ".txt");
+            System.exit(1);
+        }
+
+        if (this.severityCheck) {
+            logger.info("Severity check is enabled with value: " + this.severityCheck);
         }
     }
 
@@ -223,7 +249,7 @@ public class QualysWASScanBuilder {
             logger.info("Qualys task - Started Launching web app scanning with WAS");
             String scanId = service.launchScan();
             if (scanId != null && !scanId.isEmpty()) {
-                String message1 = "Launching scan with 'WAIT_FOR_RESULT:" + waitForResult + "'";
+                String message1 = "Launching scan with 'WAIT_FOR_RESULT:" + waitForResult + "', 'INTERVAL:" + interval + "', 'TIMEOUT:" + timeout + "'";
                 String message2 = "Scan successfully launched with scan id: " + scanId;
                 String message3 = "Please switch to WAS Classic UI and Check for report...";
                 String message4 = "To check scan result, please follow the url: " + portalServer + "/portal-front/module/was/#forward=/module/was/&scan-report=" + scanId;
