@@ -49,6 +49,7 @@ public class QualysWASScanBuilder {
     private boolean severityCheck;
     private int severityLevel;
     private int interval;
+    private int timeout;
     private int severity1Limit;
     private int severity2Limit;
     private int severity3Limit;
@@ -95,12 +96,12 @@ public class QualysWASScanBuilder {
         this.isFailOnScanError = environment.getProperty("FAIL_ON_SCAN_ERROR", Boolean.class, false);
         this.waitForResult = environment.getProperty("WAIT_FOR_RESULT", Boolean.class, true);
         this.interval = environment.getProperty("INTERVAL", Integer.class, 5);
+        this.timeout = environment.getProperty("TIMEOUT", Integer.class, (60 * 5) + 50);
         this.severity1Limit = 0;
         this.severity2Limit = 0;
         this.severity3Limit = 0;
         this.severity4Limit = 0;
         this.severity5Limit = 0;
-
         initWASClient();
         if (severityCheck) {
             assignSeverities(severityLevel);
@@ -245,26 +246,32 @@ public class QualysWASScanBuilder {
                             data.get("ServiceResponse").getAsJsonObject().getAsJsonArray("data").get(0).getAsJsonObject().get("WasScan").getAsJsonObject().remove("igs").getAsJsonObject();
                             data.get("ServiceResponse").getAsJsonObject().getAsJsonArray("data").get(0).getAsJsonObject().get("WasScan").getAsJsonObject().addProperty("ScanId", scanId);
                             if (!status.equalsIgnoreCase("error") && !status.equalsIgnoreCase("canceled") && !status.equalsIgnoreCase("finished") && isFailOnScanError) {
-                                Helper.dumpDataIntoFile(gson.toJson(data), "Qualys_Wasscan_" + scanId + ".txt");
+                                Helper.dumpDataIntoFile(gson.toJson(data), fileName);
                                 System.exit(1);
                             }
-                            Helper.dumpDataIntoFile(gson.toJson(data), fileName);
                             if (isFailConditionConfigured) {
-                                JsonObject evaluationResult = evaluateFailurePolicy(result);
-                                buildPassed = evaluationResult.get("passed").getAsBoolean();
+                                JsonObject failurePolicyEvaluationResult = evaluateFailurePolicy(result);
+                                buildPassed = failurePolicyEvaluationResult.get("passed").getAsBoolean();
                                 if (!buildPassed) {
                                     logger.info(message3);
                                     logger.info(message4);
-                                    String failureMessage = evaluationResult.get("failureMessage").getAsString();
+                                    String failureMessage = failurePolicyEvaluationResult.get("failureMessage").getAsString();
                                     logger.error(failureMessage);
-                                    Helper.dumpDataIntoFile(failureMessage, "Qualys_Wasscan_" + scanId + ".txt");
+
+                                    JsonElement evaluationResult = getEvaluationResult(failurePolicyEvaluationResult.get("result").getAsJsonObject());
+
+                                    data.get("ServiceResponse").getAsJsonObject().add("evaluationResult", evaluationResult);
+
+                                    Helper.dumpDataIntoFile(gson.toJson(data), fileName);
                                     System.exit(1);
                                 }
+                            } else {
+                                Helper.dumpDataIntoFile(gson.toJson(data), fileName);
                             }
                         } else {
                             String message = "API Error - Could not fetch scan result for scan id: " + scanId;
                             logger.error(message);
-                            Helper.dumpDataIntoFile(message, "Qualys_Wasscan_" + scanId + ".json");
+                            Helper.dumpDataIntoFile(message, "Qualys_Wasscan_" + scanId + ".txt");
                             System.exit(1);
                         }
                         logger.info(message3);
@@ -294,7 +301,7 @@ public class QualysWASScanBuilder {
         Boolean passed = criteria.evaluate(result);
         JsonObject obj = new JsonObject();
         obj.add("passed", gson.toJsonTree(passed));
-        obj.add("result", criteria.returnObject);
+        obj.add("result", criteria.getResult());
         if (!passed) {
             String failureMessage = getBuildFailureMessages(criteria.getResult());
             obj.addProperty("failureMessage", failureMessage);
@@ -307,7 +314,7 @@ public class QualysWASScanBuilder {
      */
     private String getScanFinishedStatus(String scanId) {
         QualysWASScanStatusService statusService = new QualysWASScanStatusService(client);
-        String status = statusService.fetchScanStatus(scanId, portalServer, interval);
+        String status = statusService.fetchScanStatus(scanId, portalServer, interval, timeout);
         logger.info(status);
         return status;
     }
@@ -345,6 +352,27 @@ public class QualysWASScanBuilder {
         }
 
         return StringUtils.join(failureMessages, '\n');
+    }
+
+    public JsonElement getEvaluationResult(JsonObject result) {
+        JsonObject evaluationResult = new JsonObject();
+        JsonObject severities = new JsonObject();
+        for (int i = 1; i <= 5; i++) {
+            if (result.has("severities") && result.get("severities") != null && !result.get("severities").isJsonNull()) {
+                JsonObject sevObj = result.get("severities").getAsJsonObject();
+                if (sevObj.has("" + i)) {
+                    JsonObject severity = sevObj.get("" + i).getAsJsonObject();
+                    if (severity.has("configured") && !severity.get("configured").isJsonNull() && severity.get("configured").getAsInt() != -1) {
+                        JsonObject sev = new JsonObject();
+                        sev.addProperty("configured", true);
+                        sev.addProperty("found", severity.get("found").isJsonNull() ? 0 : severity.get("found").getAsInt());
+                        severities.add("" + i, sev);
+                    }
+                }
+            }
+        }
+        evaluationResult.add("severities", severities);
+        return evaluationResult;
     }
 
     public boolean isMandatoryParametersSet() {

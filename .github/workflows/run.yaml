@@ -93,6 +93,7 @@ jobs:
           FAIL_ON_SCAN_ERROR: ${{ vars.FAIL_ON_SCAN_ERROR }}
           WAIT_FOR_RESULT: ${{ vars.WAIT_FOR_RESULT }}
           INTERVAL: ${{ vars.INTERVAL }}
+          TIMEOUT: ${{ vars.TIMEOUT }}
         continue-on-error: true
       
       - name: Upload Scan Report
