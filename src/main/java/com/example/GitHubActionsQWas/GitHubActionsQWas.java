@@ -1,7 +1,11 @@
 package com.example.GitHubActionsQWas;
 
 import com.example.GitHubActionsQWas.service.QualysWASScanBuilder;
+import com.example.GitHubActionsQWas.service.QualysWASScanResultParser;
 import com.example.GitHubActionsQWas.util.Helper;
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
@@ -13,7 +17,7 @@ import org.springframework.core.env.Environment;
 public class GitHubActionsQWas {
     private static final Logger logger = LoggerFactory.getLogger(GitHubActionsQWas.class);
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         ConfigurableApplicationContext ctx = SpringApplication.run(GitHubActionsQWas.class, args);
         Environment environment = ctx.getEnvironment();
         QualysWASScanBuilder builder = new QualysWASScanBuilder(environment);
