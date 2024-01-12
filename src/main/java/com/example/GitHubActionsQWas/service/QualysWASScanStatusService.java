@@ -5,12 +5,10 @@ import com.example.GitHubActionsQWas.util.Helper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.sql.Timestamp;
 import java.util.concurrent.TimeUnit;
 
 public class QualysWASScanStatusService {
     private static final Logger logger = LoggerFactory.getLogger(QualysWASScanStatusService.class);
-    private final static int TIMEOUT = (60 * 5) + 50; //5Hrs 50Minuts
     private WASClient client;
 
     public QualysWASScanStatusService(WASClient client) {
@@ -21,7 +19,7 @@ public class QualysWASScanStatusService {
      * @param scanId
      * @return
      */
-    public String fetchScanStatus(String scanId, String portalUrl, int INTERVAL) {
+    public String fetchScanStatus(String scanId, String portalUrl, int INTERVAL, int TIMEOUT) {
         long startTime = System.currentTimeMillis();
         long timeoutInMillis = TimeUnit.MINUTES.toMillis(TIMEOUT);
         long intervalInMillis = TimeUnit.MINUTES.toMillis(INTERVAL);
