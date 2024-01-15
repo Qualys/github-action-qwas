@@ -257,9 +257,9 @@ public class QualysWASScanBuilder {
                 if (this.waitForResult) {
                     logger.info("Qualys task - Fetching scan finished status");
                     String status = getScanFinishedStatus(scanId);
-                    logger.info("Scan finished status fetched successfully");
                     boolean buildPassed = true;
                     if (status != null) {
+                        logger.info("Scan finished status fetched successfully");
                         Gson gson = new Gson();
                         QualysWASScanResultParser resultParser = new QualysWASScanResultParser(gson.toJson(getCriteriaAsJsonObject()), client);
                         logger.info("Qualys task - Fetching scan result");
