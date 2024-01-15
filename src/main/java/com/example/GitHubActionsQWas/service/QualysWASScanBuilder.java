@@ -270,9 +270,11 @@ public class QualysWASScanBuilder {
                         if (result.has("ServiceResponse") && result.get("ServiceResponse").getAsJsonObject().has("responseCode") && result.get("ServiceResponse").getAsJsonObject().get("responseCode").getAsString().equalsIgnoreCase("SUCCESS")) {
                             data.get("ServiceResponse").getAsJsonObject().getAsJsonArray("data").get(0).getAsJsonObject().get("WasScan").getAsJsonObject().remove("igs").getAsJsonObject();
                             data.get("ServiceResponse").getAsJsonObject().getAsJsonArray("data").get(0).getAsJsonObject().get("WasScan").getAsJsonObject().addProperty("ScanId", scanId);
-                            if (!status.equalsIgnoreCase("error") && !status.equalsIgnoreCase("canceled") && !status.equalsIgnoreCase("finished") && isFailOnScanError) {
-                                Helper.dumpDataIntoFile(gson.toJson(data), fileName);
-                                System.exit(1);
+                            if (status != null) {
+                                if (!status.equalsIgnoreCase("error") && !status.equalsIgnoreCase("canceled") && !status.equalsIgnoreCase("finished") && isFailOnScanError) {
+                                    Helper.dumpDataIntoFile(gson.toJson(data), fileName);
+                                    System.exit(1);
+                                }
                             }
                             if (isFailConditionConfigured) {
                                 JsonObject failurePolicyEvaluationResult = evaluateFailurePolicy(result);
@@ -339,7 +341,7 @@ public class QualysWASScanBuilder {
      */
     private String getScanFinishedStatus(String scanId) {
         QualysWASScanStatusService statusService = new QualysWASScanStatusService(client);
-        String status = statusService.fetchScanStatus(scanId, this.scanType, this.severityCheck,this.portalServer, this.interval, this.timeout);
+        String status = statusService.fetchScanStatus(scanId, this.scanType, this.severityCheck, this.portalServer, this.interval, this.timeout);
         logger.info(status);
         return status;
     }

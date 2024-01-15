@@ -23,7 +23,7 @@ public class QualysWASScanStatusService {
         long startTime = System.currentTimeMillis();
         long timeoutInMillis = TimeUnit.MINUTES.toMillis(TIMEOUT);
         long intervalInMillis = TimeUnit.MINUTES.toMillis(INTERVAL);
-        String status = null;
+        String status = "";
         boolean failed = false;
 
         try {
@@ -44,6 +44,7 @@ public class QualysWASScanStatusService {
                         Helper.dumpDataIntoFile(message, "Qualys_Wasscan_" + scanId + ".txt");
                         System.exit(1);
                     }
+                    break;
                 } else {
                     try {
                         logger.info("Waiting for " + INTERVAL + " minute(s) before making next attempt for scanResult of scanId:" + scanId + "...");
