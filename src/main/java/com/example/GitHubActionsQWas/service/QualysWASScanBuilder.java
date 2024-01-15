@@ -245,9 +245,9 @@ public class QualysWASScanBuilder {
             logger.info("Qualys task - Started Launching web app scanning with WAS");
             String scanId = service.launchScan();
             if (scanId != null && !scanId.isEmpty()) {
-                String message1 = "Launching scan with 'WAIT_FOR_RESULT: " + waitForResult + "', 'INTERVAL: " + interval + "', 'TIMEOUT: " + timeout + "', 'AuthRecord: " + authRecord + "', 'OptionProfile: " + optionProfile + "'";
+                String message1 = "Launching scan with 'WAIT_FOR_RESULT: " + waitForResult + "', 'INTERVAL: " + interval + " min', 'TIMEOUT: " + timeout + " min', 'AuthRecord: " + authRecord + "', 'OptionProfile: " + optionProfile + "'";
                 if (this.cancelOptions) {
-                    message1 += ", 'CANCEL_OPTION:" + cancelOptions + "', 'CANCEL_HOURS:" + cancelHours + "'";
+                    message1 += ", 'CANCEL_OPTION:" + cancelOptions + "', 'CANCEL_HOURS:" + cancelHours + " hrs'";
                 }
                 String message2 = "Scan successfully launched with scan id: " + scanId;
                 String message3 = "Please switch to WAS Classic UI and Check for report...";
