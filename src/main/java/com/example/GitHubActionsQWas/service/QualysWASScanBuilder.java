@@ -342,7 +342,9 @@ public class QualysWASScanBuilder {
     private String getScanFinishedStatus(String scanId) {
         QualysWASScanStatusService statusService = new QualysWASScanStatusService(client);
         String status = statusService.fetchScanStatus(scanId, this.scanType, this.severityCheck, this.portalServer, this.interval, this.timeout);
-        logger.info(status);
+        if (status != null) {
+            logger.info(status);
+        }
         return status;
     }
 
