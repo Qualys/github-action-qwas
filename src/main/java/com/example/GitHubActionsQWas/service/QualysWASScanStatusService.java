@@ -33,6 +33,9 @@ public class QualysWASScanStatusService {
                     String message1 = "Failed to get scan result; timeout of " + TIMEOUT + " minutes reached.";
                     String message2 = "Please switch to WAS Classic UI and Check for report...";
                     String message3 = "To check scan result, please follow the url: " + portalUrl + "/portal-front/module/was/#forward=/module/was/&scan-report=" + scanId;
+                    logger.info(message1);
+                    logger.info(message2);
+                    logger.info(message3);
                     String message = message1 + "\n" + message2 + "\n" + message3;
                     Helper.dumpDataIntoFile(message, "Qualys_Wasscan_" + scanId + ".txt");
                     System.exit(1);
