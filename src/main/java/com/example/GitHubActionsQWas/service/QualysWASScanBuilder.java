@@ -41,7 +41,7 @@ public class QualysWASScanBuilder {
     private String authRecordId;
     private String optionProfile;
     private String optionProfileId;
-    private String cancelOptions;
+    private boolean cancelOptions;
     private String cancelHours;
     private boolean isFailOnSevereVulns = true;
     private boolean severityCheck;
@@ -85,7 +85,7 @@ public class QualysWASScanBuilder {
             this.authRecordId = environment.getProperty("AUTH_RECORD_ID", "");
             this.optionProfile = environment.getProperty("OPTION_PROFILE", "useDefault");
             this.optionProfileId = environment.getProperty("OPTION_PROFILE_ID", "");
-            this.cancelOptions = environment.getProperty("CANCEL_OPTION", "");
+            this.cancelOptions = environment.getProperty("CANCEL_OPTION", Boolean.class, false);
             this.cancelHours = environment.getProperty("CANCEL_HOURS", "");
             this.severityCheck = environment.getProperty("SEVERITY_CHECK", Boolean.class, false);
             this.severityLevel = environment.getProperty("SEVERITY_LEVEL", Integer.class, 0);
@@ -245,7 +245,10 @@ public class QualysWASScanBuilder {
             logger.info("Qualys task - Started Launching web app scanning with WAS");
             String scanId = service.launchScan();
             if (scanId != null && !scanId.isEmpty()) {
-                String message1 = "Launching scan with 'WAIT_FOR_RESULT:" + waitForResult + "', 'INTERVAL:" + interval + "', 'TIMEOUT:" + timeout + "'";
+                String message1 = "Launching scan with 'WAIT_FOR_RESULT: " + waitForResult + "', 'INTERVAL: " + interval + "', 'TIMEOUT: " + timeout + "', 'AuthRecord: " + authRecord + "', 'OptionProfile: " + optionProfile + "'";
+                if (this.cancelOptions) {
+                    message1 += ", 'CANCEL_OPTION:" + cancelOptions + "', 'CANCEL_HOURS:" + cancelHours + "'";
+                }
                 String message2 = "Scan successfully launched with scan id: " + scanId;
                 String message3 = "Please switch to WAS Classic UI and Check for report...";
                 String message4 = "To check scan result, please follow the url: " + portalServer + "/portal-front/module/was/#forward=/module/was/&scan-report=" + scanId;

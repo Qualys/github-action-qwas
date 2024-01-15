@@ -11,7 +11,6 @@ import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -27,7 +26,7 @@ public class QualysWASScanService {
     private String scanType;
     private String authRecord;
     private String optionProfile;
-    private String cancelOptions;
+    private boolean cancelOptions;
     private String authRecordId;
     private String optionProfileId;
     private String cancelHours;
@@ -78,11 +77,10 @@ public class QualysWASScanService {
                 JsonObject profRec = new JsonObject();
                 profRec.addProperty("id", optionProfileId);
                 wasScan.add("profile", profRec);
-            } else if (optionProfile != null && optionProfile.equals("useDefault")) {
-                logger.info("Launching Qualys WAS scan with - OptionProfile:" + "Default");
             }
 
-            if (cancelHours != null && cancelOptions != null && cancelOptions.equals("xhours") && !cancelHours.isEmpty()) {
+            if (cancelHours != null && cancelOptions && !cancelHours.isEmpty()) {
+
                 wasScan.addProperty("cancelAfterNHours", cancelHours);
             }
 
