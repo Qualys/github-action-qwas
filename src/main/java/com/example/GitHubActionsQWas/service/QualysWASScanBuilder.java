@@ -259,50 +259,50 @@ public class QualysWASScanBuilder {
                     String status = getScanFinishedStatus(scanId);
                     logger.info("Scan finished status fetched successfully");
                     boolean buildPassed = true;
-
-                    Gson gson = new Gson();
-                    QualysWASScanResultParser resultParser = new QualysWASScanResultParser(gson.toJson(getCriteriaAsJsonObject()), client);
-                    logger.info("Qualys task - Fetching scan result");
-                    JsonObject result = resultParser.fetchScanResult(scanId);
-                    if (result != null) {
-                        String fileName = "Qualys_Wasscan_" + scanId + ".json";
-                        JsonObject data = result;
-                        if (result.has("ServiceResponse") && result.get("ServiceResponse").getAsJsonObject().has("responseCode") && result.get("ServiceResponse").getAsJsonObject().get("responseCode").getAsString().equalsIgnoreCase("SUCCESS")) {
-                            data.get("ServiceResponse").getAsJsonObject().getAsJsonArray("data").get(0).getAsJsonObject().get("WasScan").getAsJsonObject().remove("igs").getAsJsonObject();
-                            data.get("ServiceResponse").getAsJsonObject().getAsJsonArray("data").get(0).getAsJsonObject().get("WasScan").getAsJsonObject().addProperty("ScanId", scanId);
-                            if (status != null) {
+                    if (status != null) {
+                        Gson gson = new Gson();
+                        QualysWASScanResultParser resultParser = new QualysWASScanResultParser(gson.toJson(getCriteriaAsJsonObject()), client);
+                        logger.info("Qualys task - Fetching scan result");
+                        JsonObject result = resultParser.fetchScanResult(scanId);
+                        if (result != null) {
+                            String fileName = "Qualys_Wasscan_" + scanId + ".json";
+                            JsonObject data = result;
+                            if (result.has("ServiceResponse") && result.get("ServiceResponse").getAsJsonObject().has("responseCode") && result.get("ServiceResponse").getAsJsonObject().get("responseCode").getAsString().equalsIgnoreCase("SUCCESS")) {
+                                data.get("ServiceResponse").getAsJsonObject().getAsJsonArray("data").get(0).getAsJsonObject().get("WasScan").getAsJsonObject().remove("igs").getAsJsonObject();
+                                data.get("ServiceResponse").getAsJsonObject().getAsJsonArray("data").get(0).getAsJsonObject().get("WasScan").getAsJsonObject().addProperty("ScanId", scanId);
                                 if (!status.equalsIgnoreCase("error") && !status.equalsIgnoreCase("canceled") && !status.equalsIgnoreCase("finished") && isFailOnScanError) {
                                     Helper.dumpDataIntoFile(gson.toJson(data), fileName);
                                     System.exit(1);
                                 }
-                            }
-                            if (isFailConditionConfigured) {
-                                JsonObject failurePolicyEvaluationResult = evaluateFailurePolicy(result);
-                                buildPassed = failurePolicyEvaluationResult.get("passed").getAsBoolean();
-                                if (!buildPassed) {
-                                    logger.info(message3);
-                                    logger.info(message4);
-                                    String failureMessage = failurePolicyEvaluationResult.get("failureMessage").getAsString();
-                                    logger.error(failureMessage);
 
-                                    JsonElement evaluationResult = getEvaluationResult(failurePolicyEvaluationResult.get("result").getAsJsonObject());
+                                if (isFailConditionConfigured) {
+                                    JsonObject failurePolicyEvaluationResult = evaluateFailurePolicy(result);
+                                    buildPassed = failurePolicyEvaluationResult.get("passed").getAsBoolean();
+                                    if (!buildPassed) {
+                                        logger.info(message3);
+                                        logger.info(message4);
+                                        String failureMessage = failurePolicyEvaluationResult.get("failureMessage").getAsString();
+                                        logger.error(failureMessage);
 
-                                    data.get("ServiceResponse").getAsJsonObject().add("evaluationResult", evaluationResult);
+                                        JsonElement evaluationResult = getEvaluationResult(failurePolicyEvaluationResult.get("result").getAsJsonObject());
 
+                                        data.get("ServiceResponse").getAsJsonObject().add("evaluationResult", evaluationResult);
+
+                                        Helper.dumpDataIntoFile(gson.toJson(data), fileName);
+                                        System.exit(1);
+                                    }
+                                } else {
                                     Helper.dumpDataIntoFile(gson.toJson(data), fileName);
-                                    System.exit(1);
                                 }
                             } else {
-                                Helper.dumpDataIntoFile(gson.toJson(data), fileName);
+                                String message = "API Error - Could not fetch scan result for scan id: " + scanId;
+                                logger.error(message);
+                                Helper.dumpDataIntoFile(message, "Qualys_Wasscan_" + scanId + ".txt");
+                                System.exit(1);
                             }
-                        } else {
-                            String message = "API Error - Could not fetch scan result for scan id: " + scanId;
-                            logger.error(message);
-                            Helper.dumpDataIntoFile(message, "Qualys_Wasscan_" + scanId + ".txt");
-                            System.exit(1);
+                            logger.info(message3);
+                            logger.info(message4);
                         }
-                        logger.info(message3);
-                        logger.info(message4);
                     }
                 } else {
                     logger.info(message3);
