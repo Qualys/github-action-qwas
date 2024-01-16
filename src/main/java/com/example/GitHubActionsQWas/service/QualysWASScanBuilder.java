@@ -115,14 +115,14 @@ public class QualysWASScanBuilder {
     }
 
     private void validateParameters() {
-        if (this.authRecord == null || ((!this.authRecord.equalsIgnoreCase("none") && !this.authRecord.equalsIgnoreCase("useDefault") && !this.authRecord.equalsIgnoreCase("other")))) {
+        if (this.authRecord == null || ((!this.authRecord.equals("none") && !this.authRecord.equals("useDefault") && !this.authRecord.equals("other")))) {
             String message = "Invalid value for AUTH_RECORD. Valid values are none, useDefault, other";
             logger.error(message);
             Helper.dumpDataIntoFile(message, "Qualys_Wasscan_" + this.webAppId + ".txt");
             System.exit(1);
         }
 
-        if (this.optionProfile == null || ((!this.optionProfile.equalsIgnoreCase("useDefault") && !this.optionProfile.equalsIgnoreCase("other")))) {
+        if (this.optionProfile == null || ((!this.optionProfile.equals("useDefault") && !this.optionProfile.equals("other")))) {
             String message = "Invalid value for OPTION_PROFILE. Valid values are useDefault, other";
             logger.error(message);
             Helper.dumpDataIntoFile(message, "Qualys_Wasscan_" + this.webAppId + ".txt");
