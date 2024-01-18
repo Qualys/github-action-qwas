@@ -42,11 +42,6 @@ jobs:
               API_SERVER: ${{ vars.API_SERVER }}
               QUALYS_USERNAME: ${{ vars.QUALYS_USERNAME }}
               QUALYS_PASSWORD: ${{ secrets.QUALYS_PASSWORD }}
-              USE_PROXY: ${{ vars.USE_PROXY }}
-              PROXY_SERVER: ${{ vars.PROXY_SERVER }}
-              PROXY_PORT: ${{ vars.PROXY_PORT }}
-              PROXY_USERNAME: ${{ vars.PROXY_USERNAME }}
-              PROXY_PASSWORD: ${{ secrets.PROXY_PASSWORD }}
               WEBAPP_ID: ${{ vars.WEBAPP_ID }}
               SCAN_NAME: ${{ vars.SCAN_NAME }}
               SCAN_TYPE: ${{ vars.SCAN_TYPE }}
@@ -106,11 +101,6 @@ jobs:
           API_SERVER: ${{ vars.API_SERVER }}
           QUALYS_USERNAME: ${{ vars.QUALYS_USERNAME }}
           QUALYS_PASSWORD: ${{ secrets.QUALYS_PASSWORD }}
-          USE_PROXY: ${{ vars.USE_PROXY }}
-          PROXY_SERVER: ${{ vars.PROXY_SERVER }}
-          PROXY_PORT: ${{ vars.PROXY_PORT }}
-          PROXY_USERNAME: ${{ vars.PROXY_USERNAME }}
-          PROXY_PASSWORD: ${{ secrets.PROXY_PASSWORD }}
           WEBAPP_ID: ${{ vars.WEBAPP_ID }}
           SCAN_NAME: ${{ vars.SCAN_NAME }}
           SCAN_TYPE: ${{ vars.SCAN_TYPE }}
@@ -167,11 +157,6 @@ jobs:
           API_SERVER: ${{ vars.API_SERVER }}
           QUALYS_USERNAME: ${{ vars.QUALYS_USERNAME }}
           QUALYS_PASSWORD: ${{ secrets.QUALYS_PASSWORD }}
-          USE_PROXY: ${{ vars.USE_PROXY }}
-          PROXY_SERVER: ${{ vars.PROXY_SERVER }}
-          PROXY_PORT: ${{ vars.PROXY_PORT }}
-          PROXY_USERNAME: ${{ vars.PROXY_USERNAME }}
-          PROXY_PASSWORD: ${{ secrets.PROXY_PASSWORD }}
           WEBAPP_ID: ${{ vars.WEBAPP_ID }}
           SCAN_NAME: ${{ vars.SCAN_NAME }}
           SCAN_TYPE: ${{ vars.SCAN_TYPE }}
@@ -218,11 +203,6 @@ jobs:
 | API_SERVER         |   | YES      | ""      | Input parameter |
 | QUALYS_USERNAME    |   | YES      | ""      | Input parameter |
 | QUALYS_PASSWORD    |   | YES      | ""      | Input parameter |
-| USE_PROXY          |   | YES      | false   | Input parameter |
-| PROXY_SERVER       |   | NO       | ""      | Input parameter |
-| PROXY_PORT         |   | NO       | 0       | Input parameter |
-| PROXY_USERNAME     |   | NO       | ""      | Input parameter |
-| PROXY_PASSWORD     |   | NO       | ""      | Input parameter |
 | WEBAPP_ID          |   | YES      | ""      | Input parameter |
 | SCAN_NAME          |   | YES      | ""      | Input parameter |
 | SCAN_TYPE          |   | YES      | ""      | Input parameter |

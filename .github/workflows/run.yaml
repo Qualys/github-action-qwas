@@ -71,11 +71,6 @@ jobs:
           API_SERVER: ${{ vars.API_SERVER }}
           QUALYS_USERNAME: ${{ vars.QUALYS_USERNAME }}
           QUALYS_PASSWORD: ${{ secrets.QUALYS_PASSWORD }}
-          USE_PROXY: ${{ vars.USE_PROXY }}
-          PROXY_SERVER: ${{ vars.PROXY_SERVER }}
-          PROXY_PORT: ${{ vars.PROXY_PORT }}
-          PROXY_USERNAME: ${{ secrets.PROXY_USERNAME }}
-          PROXY_PASSWORD: ${{ vars.PROXY_PASSWORD }}
           WEBAPP_ID: ${{ vars.WEBAPP_ID }}
           SCAN_NAME: ${{ vars.SCAN_NAME }}
           SCAN_TYPE: ${{ vars.SCAN_TYPE }}
@@ -87,8 +82,6 @@ jobs:
           CANCEL_HOURS: ${{ vars.CANCEL_HOURS }}
           SEVERITY_CHECK: ${{ vars.SEVERITY_CHECK }}
           SEVERITY_LEVEL: ${{ vars.SEVERITY_LEVEL }}
-          IS_FAIL_ON_QID_FOUND: ${{ vars.IS_FAIL_ON_QID_FOUND }}
-          QID_LIST: ${{ vars.QID_LIST }}
           EXCLUDE: ${{ vars.EXCLUDE }}
           FAIL_ON_SCAN_ERROR: ${{ vars.FAIL_ON_SCAN_ERROR }}
           WAIT_FOR_RESULT: ${{ vars.WAIT_FOR_RESULT }}
