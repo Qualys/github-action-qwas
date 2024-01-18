@@ -94,6 +94,7 @@ jobs:
         with:
           name: Qualys_WAS_Scan_Result
           path: ./outputs
+          if-no-files-found: ignore
           
       - name: Check build status
         if: steps.run-app.outcome != 'success'
