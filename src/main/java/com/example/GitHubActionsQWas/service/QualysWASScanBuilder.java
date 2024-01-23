@@ -245,7 +245,10 @@ public class QualysWASScanBuilder {
             logger.info("Qualys task - Started Launching web app scanning with WAS");
             String scanId = service.launchScan();
             if (scanId != null && !scanId.isEmpty()) {
-                String message1 = "Launching scan with 'WAIT_FOR_RESULT: " + waitForResult + "', 'INTERVAL: " + interval + " min', 'TIMEOUT: " + timeout + " min', 'AuthRecord: " + authRecord + "', 'OptionProfile: " + optionProfile + "'";
+                String message1 = "Launching scan with 'WAIT_FOR_RESULT: " + waitForResult + "'";
+                if (waitForResult) {
+                    message1 += ", 'POLLING_INTERVAL: " + interval + " mins', 'TIMEOUT: " + timeout + " mins'";
+                }
                 if (this.cancelOptions) {
                     message1 += ", 'CANCEL_OPTION:" + cancelOptions + "', 'CANCEL_HOURS:" + cancelHours + " hrs'";
                 }
@@ -290,6 +293,8 @@ public class QualysWASScanBuilder {
 
                                         Helper.dumpDataIntoFile(gson.toJson(data), fileName);
                                         System.exit(1);
+                                    } else {
+                                        Helper.dumpDataIntoFile(gson.toJson(data), fileName);
                                     }
                                 } else {
                                     Helper.dumpDataIntoFile(gson.toJson(data), fileName);
