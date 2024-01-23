@@ -48,9 +48,9 @@ public class Helper {
             String filePath = dirPath + "/" + fileName;
             try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
                 writer.write(data);
-                logger.info("Data dumped at location: " + filePath);
+                logger.info("Result artifact uploaded at location: " + filePath);
             } catch (Exception ex) {
-                logger.info("Exception while dumping the data at location: " + filePath + " Reason - " + ex.getMessage());
+                logger.info("Exception while uploading the result artifact at location: " + filePath + " Reason - " + ex.getMessage());
             }
         } catch (Exception ex) {
             logger.error("Something went wrong: " + ex.getMessage());
