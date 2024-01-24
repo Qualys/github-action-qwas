@@ -268,7 +268,7 @@ If repository is private, then add PAT (personal access token) token in the chec
 1. Valid Qualys Credentials and subscription to Qualys WAS and Qualys API.
 2. Use the `actions/checkout@v3` step with` fetch-depth: 0` before calling Qualys WAS GitHub action.
 3. While working on the self-hosted runners, ensure that your machine has stable internet connection.
-4. Add `QUALYS_PASSWORD’ in `secrets` and remaining parameters to the `repository variables` of Qualys WAS GitHub action.
+4. Add `QUALYS_PASSWORD` in `secrets` and remaining parameters to the `repository variables` of Qualys WAS GitHub action.
 
 ## GitHub action Parameters
 
