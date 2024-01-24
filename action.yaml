@@ -1,4 +1,4 @@
-name: 'Qualys Web Application Scanning GitHub Action'
+name: 'Qualys GitHub actions for Web Application Scanning'
 
 description: 'The Qualys GitHub Actions for Web Application Scanning allows DevOps teams to build application
               vulnerability scans into their existing CI/CD processes. By integrating web application scans in
@@ -29,10 +29,10 @@ inputs:
     description: "Webapp ID"
     required: true
   AUTH_RECORD:
-    description: "Auth Record"
+    description: "Authentication Record"
     required: false
   AUTH_RECORD_ID:
-    description: "Auth Record ID"
+    description: "Authentication Record ID"
     required: false
   OPTION_PROFILE:
     description: "Option Profile"
@@ -73,11 +73,7 @@ runs:
   steps:
     - name: Setting up GitHub Repository
       uses: actions/checkout@v3
-      with:
-        repository: TheLogicalNights/GitHub-Actions-Release-Demo
-        ref: main
-        path: ./
-    
+  
     - name: Setting up Maven Wrapper
       if: runner.os != 'Windows'
       run: chmod +x ./mvnw
@@ -125,8 +121,6 @@ runs:
         CANCEL_HOURS: ${{ inputs.CANCEL_HOURS }}
         SEVERITY_CHECK: ${{ inputs.SEVERITY_CHECK }}
         SEVERITY_LEVEL: ${{ inputs.SEVERITY_LEVEL }}
-        IS_FAIL_ON_QID_FOUND: ${{ inputs.IS_FAIL_ON_QID_FOUND }}
-        QID_LIST: ${{ inputs.QID_LIST }}
         EXCLUDE: ${{ inputs.EXCLUDE }}
         FAIL_ON_SCAN_ERROR: ${{ inputs.FAIL_ON_SCAN_ERROR }}
         WAIT_FOR_RESULT: ${{ inputs.WAIT_FOR_RESULT }}
