@@ -46,7 +46,7 @@ public class QualysWASScanService {
     private WASClient apiClient;
     private boolean failOnScanError;
 
-    public String launchScan() {
+    protected String launchScan() {
         JsonObject requestData = new JsonObject();
         try {
             JsonObject requestObj = new JsonObject();

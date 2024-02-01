@@ -37,33 +37,6 @@ public class QualysWASScanResultParser {
         JsonObject jsonObject = jsonTree.getAsJsonObject();
         if (jsonObject.has("failConditions")) {
             JsonObject failConditions = jsonObject.getAsJsonObject("failConditions");
-            // QIDs
-            if (failConditions.has("qids") && !failConditions.get("qids").isJsonNull()) {
-                JsonArray qids = failConditions.getAsJsonArray("qids");
-                JsonObject qidsConf = new JsonObject();
-                qidsConf.add("found", null);
-                qidsConf.addProperty("result", true);
-                for (JsonElement qid : qids) {
-                    String qidString = qid.getAsString();
-                    configuredQids.add(qidString);
-                    if (qidString.contains("-")) {
-                        String[] qidElements = qidString.split("-");
-                        int start = Integer.parseInt(qidElements[0]);
-                        int end = Integer.parseInt(qidElements[1]);
-                        for (int i = start; i <= end; i++) {
-                            this.qidList.add(i);
-                        }
-                    } else {
-                        this.qidList.add(Integer.parseInt(qidString));
-                    }
-                }
-                qidsConf.addProperty("configured", String.join(",", configuredQids));
-                returnObject.add("qids", qidsConf);
-
-            } else {
-                logger.debug("'qids' not found in given JSON.");
-            }
-
             // Severities
             if (failConditions.has("severities") && !failConditions.get("severities").isJsonNull()) {
                 JsonObject severities = failConditions.getAsJsonObject("severities");
@@ -117,9 +90,9 @@ public class QualysWASScanResultParser {
         }
     }
 
-    public JsonObject fetchScanResult(String scanId) {
+    protected JsonObject fetchScanResult(String scanId) {
         QualysWASResponse qualysWASResponse = client.getScanResult(scanId);
-        JsonObject scanResult = qualysWASResponse.response;
+        JsonObject scanResult = qualysWASResponse.getResponse();
         return scanResult;
     }
 
@@ -138,7 +111,7 @@ public class QualysWASScanResultParser {
 
     } // setDefaultValues
 
-    public Boolean evaluate(JsonObject response) {
+    protected Boolean evaluate(JsonObject response) {
         Boolean finalStatus = true, sevStatus = true, qidStatus = true, cveStatus = true, softStatus = true;
         JsonObject serviceResponseObj = response.get("ServiceResponse").getAsJsonObject();
         String responseCode = serviceResponseObj.get("responseCode").getAsString();
@@ -243,11 +216,11 @@ public class QualysWASScanResultParser {
         returnObject.add("severities", sevVulnsElement);
     }
 
-    public JsonObject getResult() {
+    protected JsonObject getResult() {
         return this.returnObject;
     }
 
-    public Boolean evaluateSev(JsonObject statsData) {
+    protected Boolean evaluateSev(JsonObject statsData) {
         HashMap<Integer, Integer> evaluationSev = new HashMap<>();
         boolean sevStatus = true;
         for (int i = 1; i <= 5; i++) {
