@@ -268,7 +268,6 @@ public class QualysWASScanBuilder {
                                         Helper.dumpDataIntoFile(gson.toJson(data), fileName);
                                         System.exit(1);
                                     }
-
                                     if (isFailConditionConfigured) {
                                         JsonObject failurePolicyEvaluationResult = evaluateFailurePolicy(result);
                                         buildPassed = failurePolicyEvaluationResult.get("passed").getAsBoolean();
