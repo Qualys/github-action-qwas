@@ -10,7 +10,7 @@ import java.io.FileWriter;
 
 @Component
 public class Helper {
-    private static final Logger logger = LoggerFactory.getLogger(Helper.class);
+    static final Logger logger = LoggerFactory.getLogger(Helper.class);
 
     public Helper() {
 
@@ -34,7 +34,7 @@ public class Helper {
         return defaultTimeoutInMins;
     }
 
-    public static void dumpDataIntoFile(String data, String fileName) {
+    public static void  dumpDataIntoFile(String data, String fileName) {
         String dirPath = "outputs";
         try {
             File dir = new File(dirPath);

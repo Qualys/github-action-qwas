@@ -19,10 +19,10 @@ public class QualysWASScanStatusService {
      * @param scanId
      * @return
      */
-    public String fetchScanStatus(String scanId, String scanType, boolean severityCheck, String portalUrl, int INTERVAL, int TIMEOUT) {
+    public String fetchScanStatus(String scanId, String scanType, boolean severityCheck, String portalUrl, long INTERVAL, long TIMEOUT) {
         long startTime = System.currentTimeMillis();
-        long timeoutInMillis = TimeUnit.MINUTES.toMillis(TIMEOUT);
-        long intervalInMillis = TimeUnit.MINUTES.toMillis(INTERVAL);
+        long timeoutInMillis = TimeUnit.SECONDS.toMillis(TIMEOUT);
+        long intervalInMillis = TimeUnit.SECONDS.toMillis(INTERVAL);
         String status = "";
         boolean failed = false;
 
@@ -30,7 +30,7 @@ public class QualysWASScanStatusService {
             while ((status = client.getScanFinishedStatus(scanId)) == null) {
                 long endTime = System.currentTimeMillis();
                 if ((endTime - startTime) > timeoutInMillis) {
-                    String message1 = "Failed to get scan result; timeout of " + TIMEOUT + " minutes reached.";
+                    String message1 = "Failed to get scan result; timeout of " + TimeUnit.SECONDS.toMinutes(TIMEOUT) + " minutes reached.";
                     String message2 = "Please switch to WAS Classic UI and Check for report...";
                     String message3 = "To check scan result, please follow the url: " + portalUrl + "/portal-front/module/was/#forward=/module/was/&scan-report=" + scanId;
                     logger.info(message1);
@@ -47,7 +47,7 @@ public class QualysWASScanStatusService {
                     break;
                 } else {
                     try {
-                        logger.info("Waiting for " + INTERVAL + " minute(s) before making next attempt for scanResult of scanId:" + scanId + "...");
+                        logger.info("Waiting for " + TimeUnit.SECONDS.toMinutes(INTERVAL) + " minute(s) before making next attempt for scanResult of scanId:" + scanId + "...");
                         Thread.sleep(intervalInMillis);
                     } catch (Exception ex) {
                         logger.info(ex.getMessage());
