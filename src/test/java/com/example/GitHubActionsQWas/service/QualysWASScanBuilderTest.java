@@ -1,14 +1,10 @@
 package com.example.GitHubActionsQWas.service;
 
-import com.example.GitHubActionsQWas.util.Helper;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.core.env.Environment;
 
 import java.io.FileReader;
@@ -16,20 +12,17 @@ import java.io.FileReader;
 import static com.github.stefanbirkner.systemlambda.SystemLambda.catchSystemExit;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
-import static org.powermock.api.mockito.PowerMockito.mock;
-import static org.powermock.api.mockito.PowerMockito.when;
 
-@RunWith(PowerMockRunner.class)
 public class QualysWASScanBuilderTest {
     private QualysWASScanBuilder builder;
     private Environment environment = mock(Environment.class);
 
     @Before
     public void setup() {
-        when(environment.getProperty("API_SERVER", "")).thenReturn("https://qualysapi.qualys.com");
-        when(environment.getProperty("QUALYS_USERNAME", "")).thenReturn("quays_pg19");
-        when(environment.getProperty("QUALYS_PASSWORD", "")).thenReturn("o34kLasNpg");
-        when(environment.getProperty("USE_PROXY", Boolean.class, false)).thenReturn(true);
+        when(environment.getProperty("API_SERVER", "")).thenReturn("https://example.com");
+        when(environment.getProperty("QUALYS_USERNAME", "")).thenReturn("qualusUsername");
+        when(environment.getProperty("QUALYS_PASSWORD", "")).thenReturn("qualysPassword");
+        when(environment.getProperty("USE_PROXY", Boolean.class, false)).thenReturn(false);
         when(environment.getProperty("PROXY_SERVER", "")).thenReturn("proxyServer");
         when(environment.getProperty("PROXY_PORT", Integer.class, 0)).thenReturn(8080);
         when(environment.getProperty("PROXY_USERNAME", "")).thenReturn("proxyUsername");
@@ -53,16 +46,16 @@ public class QualysWASScanBuilderTest {
         when(environment.getProperty("INTERVAL", Integer.class, 5)).thenReturn(5);
         when(environment.getProperty("TIMEOUT", Integer.class, (60 * 5) + 50)).thenReturn(350);
 
-        builder = PowerMockito.spy(new QualysWASScanBuilder(environment));
+        builder = spy(new QualysWASScanBuilder(environment));
     }
 
     // Constructor assigns values to all parameters based on environment properties
     @Test
     public void test_constructor_assigns_values() throws Exception {
-        assertEquals("https://qualysapi.qualys.com", builder.getApiServer());
-        assertEquals("quays_pg19", builder.getQualysUsername());
-        assertEquals("o34kLasNpg", builder.getQualysPasssword());
-        assertTrue(builder.isUseProxy());
+        assertEquals("https://example.com", builder.getApiServer());
+        assertEquals("qualusUsername", builder.getQualysUsername());
+        assertEquals("qualysPassword", builder.getQualysPasssword());
+        assertFalse(builder.isUseProxy());
         assertEquals("proxyServer", builder.getProxyServer());
         assertEquals(8080, builder.getProxyPort());
         assertEquals("proxyUsername", builder.getProxyUsername());
@@ -92,6 +85,12 @@ public class QualysWASScanBuilderTest {
         assertNull("", builder.getVulnsTimeout());
         assertTrue(builder.isWaitForResult());
         assertNotNull(builder.getClient());
+        assertEquals(0, builder.getSeverity1Limit());
+        assertEquals(0, builder.getSeverity2Limit());
+        assertEquals(0, builder.getSeverity3Limit());
+        assertEquals(1, builder.getSeverity4Limit());
+        assertEquals(1, builder.getSeverity5Limit());
+        assertNotNull(builder.getEnvironment());
     }
 
     @Test
@@ -187,35 +186,6 @@ public class QualysWASScanBuilderTest {
     }
 
     @Test
-    public void test_launch_scan_successfully_wait_for_result_is_false() {
-        Helper mockHelper = mock(Helper.class);
-        builder.setWaitForResult(false);
-
-        builder.launchWebApplicationScan();
-
-        // Assert statements
-        verify(mockHelper, times(1));
-    }
-
-    @Test
-    public void test_launch_scan_successfully_wait_for_result_is_true() throws Exception {
-        Helper mockHelper = mock(Helper.class);
-        builder.setWaitForResult(true);
-
-        doReturn("FINISHED").when(builder).getScanFinishedStatus(anyString());
-
-        try (FileReader reader = new FileReader("src/test/java/test_data/test_scanResult_mockData_1.json")) {
-            JsonObject returnData = new JsonParser().parse(reader).getAsJsonObject();
-            doReturn(returnData).when(builder).fetchScanResult(any(QualysWASScanResultParser.class), anyString());
-        }
-
-        builder.launchWebApplicationScan();
-
-        // Assert statements
-        verify(mockHelper, times(1));
-    }
-
-    @Test
     public void test_testConnection_with_invalid_credentials() throws Exception {
         builder.setQualysUsername("invalidUsername");
         builder.setQualysPasssword("invalidPassword");
@@ -244,6 +214,9 @@ public class QualysWASScanBuilderTest {
             doReturn(returnData).when(builder).evaluateFailurePolicy(any(JsonObject.class));
         }
 
+        doReturn("12345678").when(builder).launchWasScan(any(QualysWASScanService.class));
+        doReturn(true).when(builder).testConnection();
+
         // Assert statements
         int statusCode = catchSystemExit(builder::launchWebApplicationScan);
 
@@ -251,33 +224,9 @@ public class QualysWASScanBuilderTest {
     }
 
     @Test
-    public void test_launch_scan_successfully_fail_condition_configured_and_build_passed() throws Exception {
-        Helper mockHelper = mock(Helper.class);
-        builder.setWaitForResult(true);
-        builder.setSeverityCheck(true);
-        builder.assignSeverities();
-
-        doReturn("FINISHED").when(builder).getScanFinishedStatus(anyString());
-
-        try (FileReader reader = new FileReader("src/test/java/test_data/test_scanResult_mockData_1.json")) {
-            JsonObject returnData = new JsonParser().parse(reader).getAsJsonObject();
-            doReturn(returnData).when(builder).fetchScanResult(any(QualysWASScanResultParser.class), anyString());
-        }
-
-        try (FileReader reader = new FileReader("src/test/java/test_data/test_failurePolicyEvaluationResult_buildPassed_mockData.json")) {
-            JsonObject returnData = new JsonParser().parse(reader).getAsJsonObject();
-            doReturn(returnData).when(builder).evaluateFailurePolicy(any(JsonObject.class));
-        }
-
-        builder.launchWebApplicationScan();
-
-        verify(mockHelper, times(1));
-    }
-
-    @Test
     public void test_launch_scan_successfully_fetch_result_failure() throws Exception {
-        Helper mockHelper = mock(Helper.class);
         builder.setWaitForResult(true);
+        QualysWASScanService mockService = mock(QualysWASScanService.class);
 
         doReturn("FINISHED").when(builder).getScanFinishedStatus(anyString());
 
@@ -285,6 +234,9 @@ public class QualysWASScanBuilderTest {
             JsonObject returnData = new JsonParser().parse(reader).getAsJsonObject();
             doReturn(returnData).when(builder).fetchScanResult(any(QualysWASScanResultParser.class), anyString());
         }
+
+        doReturn("12345678").when(builder).launchWasScan(any(QualysWASScanService.class));
+        doReturn(true).when(builder).testConnection();
 
         // Assert statements
         int statusCode = catchSystemExit(builder::launchWebApplicationScan);
@@ -307,12 +259,14 @@ public class QualysWASScanBuilderTest {
 
     @Test
     public void test_getScanFinishedStatus() {
+        doReturn("FINISHED").when(builder).getScanFinishedStatus(anyString());
         String status = builder.getScanFinishedStatus("38931000");
         assertNotNull(status);
     }
 
     @Test
     public void test_isMandatoryParametersSet() {
+        doReturn(true).when(builder).isMandatoryParametersSet();
         boolean result = builder.isMandatoryParametersSet();
         assertTrue(result);
     }

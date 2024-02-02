@@ -17,6 +17,7 @@ import org.springframework.core.env.Environment;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Getter
 @Setter
@@ -168,9 +169,9 @@ public class QualysWASScanBuilder {
         WASAuth auth = new WASAuth();
         auth.setWasCredentials(apiServer, qualysUsername, qualysPasssword);
 
-        if (useProxy) {
-            auth.setProxyCredentials(proxyServer, proxyPort, proxyUsername, proxyPassword);
-        }
+//        if (useProxy) {
+//            auth.setProxyCredentials(proxyServer, proxyPort, proxyUsername, proxyPassword);
+//        }
         client = new WASClient(auth, System.out);
     }
 
@@ -233,7 +234,7 @@ public class QualysWASScanBuilder {
                 QualysWASScanService service = QualysWASScanService.builder().webAppId(webAppId).scanName(scanName).scanType(scanType).authRecord(authRecord).authRecordId(authRecordId).optionProfile(optionProfile).optionProfileId(optionProfileId).cancelOptions(cancelOptions).cancelHours(cancelHours).isFailConditionsConfigured(isFailConditionConfigured).pollingIntervalForVulns(Helper.setTimeoutInMinutes("pollingInterval", DEFAULT_POLLING_INTERVAL_FOR_VULNS, pollingInterval)).vulnsTimeout(Helper.setTimeoutInMinutes("vulnsTimeout", DEFAULT_TIMEOUT_FOR_VULNS, vulnsTimeout)).criteriaObject(getCriteriaAsJsonObject()).apiServer(apiServer).apiUser(qualysUsername).apiPass(qualysPasssword).useProxy(useProxy).proxyServer(proxyServer).proxyPort(proxyPort).proxyUsername(proxyUsername).proxyPassword(proxyPassword).portalUrl(portalServer).failOnScanError(isFailOnScanError).apiClient(client).build();
 
                 logger.info("Qualys task - Started Launching web app scanning with WAS");
-                String scanId = service.launchScan();
+                String scanId = launchWasScan(service);
                 if (scanId != null && !scanId.isEmpty()) {
                     String message1 = "Launching scan with 'WAIT_FOR_RESULT: " + waitForResult + "'";
                     if (waitForResult) {
@@ -318,6 +319,10 @@ public class QualysWASScanBuilder {
         }
     }
 
+    protected String launchWasScan(QualysWASScanService service) {
+        return service.launchScan();
+    }
+
     protected JsonObject fetchScanResult(QualysWASScanResultParser resultParser, String scanId) {
         return resultParser.fetchScanResult(scanId);
     }
@@ -339,7 +344,7 @@ public class QualysWASScanBuilder {
 
     protected String getScanFinishedStatus(String scanId) {
         QualysWASScanStatusService statusService = new QualysWASScanStatusService(client);
-        String status = statusService.fetchScanStatus(scanId, this.scanType, this.severityCheck, this.portalServer, this.interval, this.timeout);
+        String status = statusService.fetchScanStatus(scanId, this.scanType, this.severityCheck, this.portalServer, TimeUnit.MINUTES.toSeconds(this.interval), TimeUnit.MINUTES.toSeconds(this.timeout));
         if (status != null) {
             logger.info(status);
         }

@@ -7,9 +7,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 
-import static com.example.GitHubActionsQWas.util.Helper.logger;
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
 
 public class HelperTest {
     // setTimeoutInMinutes method returns calculated timeout in minutes when timeout is in regex form

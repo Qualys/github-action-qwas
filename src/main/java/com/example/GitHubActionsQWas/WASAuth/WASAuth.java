@@ -54,10 +54,4 @@ public class WASAuth {
         this.username = username;
         this.password = password;
     }
-    public void setProxyCredentials(String proxyServer, int proxyPort, String proxyUsername, String proxyPassword) {
-        this.proxyServer = proxyServer;
-        this.proxyUsername = proxyUsername;
-        this.proxyPassword = proxyPassword;
-        this.proxyPort = proxyPort;
-    }
 }

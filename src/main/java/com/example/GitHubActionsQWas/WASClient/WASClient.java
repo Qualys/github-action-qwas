@@ -39,7 +39,7 @@ public class WASClient extends WASBaseClient {
         this.apiMap.put("getWebAppCount", "/qps/rest/3.0/count/was/webapp");
         this.apiMap.put("getScanResult", "/qps/rest/3.0/download/was/wasscan/");
         this.apiMap.put("getScanStatus", "/qps/rest/3.0/status/was/wasscan/");
-        this.apiMap.put("launchScan", "/qps/rest/3.0/launch/was/wasscan");
+        this.apiMap.put("launchWasScan", "/qps/rest/3.0/launch/was/wasscan");
     }
 
     public QualysWASResponse getScanResult(String scanId) {
@@ -55,7 +55,7 @@ public class WASClient extends WASBaseClient {
     }
 
     public QualysWASResponse launchWASScan(JsonObject requestData) {
-        return this.post(this.apiMap.get("launchScan"), requestData);
+        return this.post(this.apiMap.get("launchWasScan"), requestData);
     }
 
     public void testConnection() throws Exception {
