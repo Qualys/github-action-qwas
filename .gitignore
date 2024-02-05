@@ -5,6 +5,7 @@ target/
 !**/src/test/**/target/
 outputs/
 application.properties
+htmlReport/
 
 ### STS ###
 .apt_generated
