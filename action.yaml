@@ -1,9 +1,6 @@
 name: 'Qualys GitHub actions for Web Application Scanning'
 
-description: 'The Qualys GitHub Actions for Web Application Scanning allows DevOps teams to build application
-              vulnerability scans into their existing CI/CD processes. By integrating web application scans in
-              this manner, application security testing is accomplished earlier in the SDLC to catch and eliminate
-              security flaws.'
+description: 'This plugin allows DevOps teams to build application vulnerability scans into their existing CI/CD processes.'
 
 branding:
   icon: 'shield'
