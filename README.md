@@ -3,7 +3,7 @@
 
 ## Description
 
-The Qualys GitHub Actions for Web Application Scanning (WAS) allows DevOps teams to build application vulnerability scans into their existing CI/CD processes. By integrating web application scans in this manner, application security testing is accomplished earlier in the Software Development Life Cycle (SDLC) to catch and eliminate security flaws.
+GitHub Action for WAS allows DevOps teams to build Web application vulnerability scans into their existing GitHub workflows. By integrating and automating scans, web application security testing is accomplished early in the SDLC to catch and eliminate security flaws before they reach production.
 
 This README document explains how to use the Qualys WAS GitHub Action and gives some samples for your reference.
 
