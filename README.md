@@ -3,18 +3,13 @@
 
 ## Description
 
-The workflow of GitHub Actions has four main steps:
-1. Prerequisites 
-2. Configure GitHub Environment Parameters 
-3. Configure GitHub Action 
-4. Download Scan Results
+GitHub Action for WAS allows DevOps teams to build Web application vulnerability scans into their existing GitHub workflows. By integrating and automating scans, web application security testing is accomplished early in the SDLC to catch and eliminate security flaws before they reach production.
 
 This README document explains how to use the Qualys WAS GitHub Action and gives some samples for your reference.
 
 ## How to use the Qualys WAS GitHub Action
 
 1. Visit [GitHub configuration a workflow](https://help.github.com/en/actions/configuring-and-managing-workflows/configuring-a-workflow) to enable GitHub Action in your repository.
-   [configuring-a-workflow](https://help.github.com/en/actions/configuring-and-managing-workflows/configuring-a-workflow)
 2. Subscribe to Qualys WAS module and obtain Qualys credentials.
 3. Create GitHub Secrets and variables. Refer to GitHub Action Parameter section below to learn about the parameters.
    Refer to [Encrypted secrets](https://docs.github.com/en/actions/reference/encrypted-secrets) for more details on how to set up secrets.
