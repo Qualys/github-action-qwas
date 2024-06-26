@@ -32,7 +32,7 @@ public class QualysWASScanStatusService {
                 if ((endTime - startTime) > timeoutInMillis) {
                     String message1 = "Failed to get scan result; timeout of " + TimeUnit.SECONDS.toMinutes(TIMEOUT) + " minutes reached.";
                     String message2 = "Please switch to WAS Classic UI and Check for report...";
-                    String message3 = "To check scan result, please follow the url: " + portalUrl + "/was/#/reports/online-reports/email-report/scan/" + scanId;
+                    String message3 = "To check scan result, please follow the url: " + portalUrl + "/portal-front/module/was/#forward=/module/was/&scan-report=" + scanId;
                     logger.info(message1);
                     logger.info(message2);
                     logger.info(message3);
