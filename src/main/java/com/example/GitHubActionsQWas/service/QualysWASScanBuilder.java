@@ -245,8 +245,7 @@ public class QualysWASScanBuilder {
                     }
 
                     String message2 = "Scan successfully launched with scan id: " + scanId + " and scan name: " + service.getScanName();
-                    String message3 = "Please switch to WAS Classic UI and Check for report...";
-                    String message4 = "To check scan result, please follow the url: " + portalServer + "/was/#/reports/online-reports/email-report/scan/" + scanId;
+                    String message3 = "To check scan result on Qualys UI, please follow the url. Note that, scan result URL will work with New WAS UI only: " + portalServer + "/was/#/reports/online-reports/email-report/scan/" + scanId;
                     logger.info(message1);
                     logger.info(message2);
                     if (this.waitForResult) {
@@ -274,7 +273,6 @@ public class QualysWASScanBuilder {
                                         buildPassed = failurePolicyEvaluationResult.get("passed").getAsBoolean();
                                         if (!buildPassed) {
                                             logger.info(message3);
-                                            logger.info(message4);
                                             String failureMessage = failurePolicyEvaluationResult.get("failureMessage").getAsString();
                                             logger.error(failureMessage);
 
@@ -297,13 +295,11 @@ public class QualysWASScanBuilder {
                                     System.exit(1);
                                 }
                                 logger.info(message3);
-                                logger.info(message4);
                             }
                         }
                     } else {
                         logger.info(message3);
-                        logger.info(message4);
-                        String message = message1 + "\n" + message2 + "\n" + message3 + "\n" + message4;
+                        String message = message1 + "\n" + message2 + "\n" + message3;
                         String fileName = "Qualys_Wasscan_" + webAppId + ".txt";
                         Helper.dumpDataIntoFile(message, fileName);
                     }
