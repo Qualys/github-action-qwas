@@ -243,9 +243,9 @@ public class QualysWASScanBuilder {
                     if (this.cancelOptions) {
                         message1 += ", 'CANCEL_OPTION:" + cancelOptions + "', 'CANCEL_HOURS:" + cancelHours + " hrs'";
                     }
-
                     String message2 = "Scan successfully launched with scan id: " + scanId + " and scan name: " + service.getScanName();
                     String message3 = "To check scan result on Qualys UI, please follow the url. Note that, scan result URL will work with New WAS UI only: " + portalServer + "/was/#/reports/online-reports/email-report/scan/" + scanId;
+                    
                     logger.info(message1);
                     logger.info(message2);
                     if (this.waitForResult) {
