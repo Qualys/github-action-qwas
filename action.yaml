@@ -131,7 +131,7 @@ runs:
       shell: bash
     
     - name: Uploading Qualys WAS Scan Result
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: Qualys_WAS_Scan_Result
         path: ./outputs
