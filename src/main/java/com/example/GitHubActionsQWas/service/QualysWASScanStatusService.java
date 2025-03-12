@@ -31,15 +31,16 @@ public class QualysWASScanStatusService {
                 long endTime = System.currentTimeMillis();
                 if ((endTime - startTime) > timeoutInMillis) {
                     String message1 = "Failed to get scan result; timeout of " + TimeUnit.SECONDS.toMinutes(TIMEOUT) + " minutes reached.";
-                    String message2 = "To check scan result on Qualys UI, please follow the url. Note that, scan result URL will work with New WAS UI only: " + portalUrl + "/was/#/reports/online-reports/email-report/scan/" + scanId;
-
+                    String message2 = "Please switch to WAS Classic UI and Check for report...";
+                    String message3 = "To check scan result, please follow the url: " + portalUrl + "/was/#/reports/online-reports/email-report/scan/" + scanId;
                     logger.info(message1);
                     logger.info(message2);
+                    logger.info(message3);
                     if (scanType.equalsIgnoreCase("vulnerability") && severityCheck) {
                         failed = true;
                     }
                     if (failed) {
-                        String message = message1 + "\n" + message2;
+                        String message = message1 + "\n" + message2 + "\n" + message3;
                         Helper.dumpDataIntoFile(message, "Qualys_Wasscan_" + scanId + ".txt");
                         System.exit(1);
                     }

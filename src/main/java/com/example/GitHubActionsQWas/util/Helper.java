@@ -1,5 +1,6 @@
 package com.example.GitHubActionsQWas.util;
 
+import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -56,4 +57,23 @@ public class Helper {
             logger.error("Something went wrong: " + ex.getMessage());
         }
     }
+
+    public static String getCompleteFileName(String fileName) {
+        String filePath = Strings.EMPTY;
+        String dirPath = "outputs";
+        try {
+            File dir = new File(dirPath);
+            if (!dir.exists() || !dir.isDirectory()) {
+                boolean isDirCreated = dir.mkdirs();
+                if (!isDirCreated) {
+                    logger.info("Error while creating directory: " + dirPath);
+                }
+            }
+            filePath = dirPath + "/" + fileName;
+        } catch (Exception ex) {
+            logger.error("Something went wrong: " + ex.getMessage());
+        }
+        return filePath;
+    }
+
 }
