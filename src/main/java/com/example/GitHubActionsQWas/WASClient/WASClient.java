@@ -1,22 +1,26 @@
 package com.example.GitHubActionsQWas.WASClient;
 
 import com.example.GitHubActionsQWas.WASAuth.WASAuth;
+import com.example.GitHubActionsQWas.util.Helper;
 import com.google.gson.*;
+import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpHeaders;
 
 import java.io.BufferedReader;
+import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.sql.Timestamp;
 import java.util.Base64;
 import java.util.HashMap;
 
@@ -40,6 +44,9 @@ public class WASClient extends WASBaseClient {
         this.apiMap.put("getScanResult", "/qps/rest/3.0/download/was/wasscan/");
         this.apiMap.put("getScanStatus", "/qps/rest/3.0/status/was/wasscan/");
         this.apiMap.put("launchWasScan", "/qps/rest/3.0/launch/was/wasscan");
+        this.apiMap.put("createReport", "/qps/rest/3.0/create/was/report");
+        this.apiMap.put("getReportStatus", "/qps/rest/3.0/status/was/report/");
+        this.apiMap.put("downloadReport", "/qps/rest/3.0/download/was/report/");
     }
 
     public QualysWASResponse getScanResult(String scanId) {
@@ -56,6 +63,56 @@ public class WASClient extends WASBaseClient {
 
     public QualysWASResponse launchWASScan(JsonObject requestData) {
         return this.post(this.apiMap.get("launchWasScan"), requestData);
+    }
+
+    public void downloadReport(String reportId) {
+        this.download(this.apiMap.get("downloadReport") + reportId);
+    }
+
+    public QualysWASResponse createReport(JsonObject requestData) {
+        return this.post(this.apiMap.get("createReport"), requestData);
+    }
+
+    public QualysWASResponse getReportStatus(String reportId) {
+        return this.get(this.apiMap.get("getReportStatus") + reportId);
+    }
+
+    private void download(String apiPath) {
+        CloseableHttpClient httpClient = null;
+
+        try {
+            URL url = this.getAbsoluteUrl(apiPath);
+            logger.info("Making Request: {}", url.toString());
+            httpClient = this.getHttpClient();
+
+            HttpGet getRequest = new HttpGet(url.toString());
+            getRequest.addHeader("Authorization", "Basic " + this.getBasicAuthHeader());
+            CloseableHttpResponse response = httpClient.execute(getRequest);
+            logger.debug("Server returned with ResponseCode: {}", response.getStatusLine().getStatusCode());
+
+            HttpEntity entity = response.getEntity();
+            if (entity != null) {
+                // Extract filename from Content-Disposition header
+                String contentDisposition = response.getFirstHeader(HttpHeaders.CONTENT_DISPOSITION) != null
+                        ? response.getFirstHeader(HttpHeaders.CONTENT_DISPOSITION).getValue()
+                        : "attachment; filename=file.pdf";
+
+                String fileName = "downloaded.pdf"; // Default name
+                if (contentDisposition.contains("filename=")) {
+                    fileName = contentDisposition.split("filename=")[1].trim().replace("\"", "");
+                    fileName = Helper.getCompleteFileName(fileName);
+                }
+
+                // Save the PDF file locally
+                byte[] pdfBytes = EntityUtils.toByteArray(entity);
+                try (FileOutputStream fos = new FileOutputStream(fileName)) {
+                    fos.write(pdfBytes);
+                }
+                logger.info("Successfully uploaded PDF Report file to output directory.");
+            }
+        } catch (Exception e) {
+            logger.error("Failed to download report. Error: {}", e.getMessage());
+        }
     }
 
     public void testConnection() throws Exception {
