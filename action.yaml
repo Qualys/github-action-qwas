@@ -77,6 +77,10 @@ runs:
     - name: Setting up GitHub Repository
       uses: actions/checkout@v3
 
+    - name: Debug - List Files
+      run: ls -lah
+      shell: bash
+
     - name: Generate Maven Wrapper (if missing)
       run: mvn -N wrapper:wrapper
       shell: bash
