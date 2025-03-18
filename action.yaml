@@ -108,16 +108,8 @@ runs:
         path: ~/.m2/repository
         key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
 
-    - name: Checking directory contents
-      run: ls ./target
-      shell: bash
-
-    - name: Setting up executable
-      run: chmod +x ./GitHubActionsQWas-0.0.1-SNAPSHOT.jar
-      shell: bash
-
     - name: Spinning up Qualys WAS Scan Plugin
-      run: java -jar ./GitHubActionsQWas-0.0.1-SNAPSHOT.jar
+      run: java -jar ./target/GitHubActionsQWas-0.0.1-SNAPSHOT.jar
       id: run-app
       env:
         API_SERVER: ${{ inputs.API_SERVER }}
