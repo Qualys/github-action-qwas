@@ -110,6 +110,7 @@ runs:
 
     - name: Checking directory contents
       run: ls
+      shell: bash
 
     - name: Setting up executable
       run: chmod +x ./GitHubActionsQWas-0.0.1-SNAPSHOT.jar
