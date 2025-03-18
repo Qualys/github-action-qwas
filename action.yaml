@@ -76,6 +76,8 @@ runs:
   steps:
     - name: Setting up GitHub Repository
       uses: actions/checkout@v3
+      with:
+        repository: Qualys/github-action-qwas
 
     - name: Setting up Maven Wrapper
       if: runner.os != 'Windows'
