@@ -75,7 +75,7 @@ runs:
   using: composite
   steps:
     - name: Setting up GitHub Repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         repository: Qualys/github-action-qwas
 
@@ -85,13 +85,13 @@ runs:
       shell: bash
 
     - name: Setting up Java Environment
-      uses: actions/setup-java@v3
+      uses: actions/setup-java@v4
       with:
         java-version: '17'
         distribution: 'oracle'
 
     - name: Caching Maven dependencies
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: ~/.m2/repository
         key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
@@ -103,7 +103,7 @@ runs:
       shell: bash
 
     - name: Storing Maven dependencies in cache
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: ~/.m2/repository
         key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
