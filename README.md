@@ -18,7 +18,7 @@ This README document explains how to use the Qualys WAS GitHub Action and gives 
 2. Subscribe to Qualys WAS module and obtain Qualys credentials.
 3. Create GitHub Secrets and variables. Refer to GitHub Action Parameter section below to learn about the parameters.
    Refer to [Encrypted secrets](https://docs.github.com/en/actions/reference/encrypted-secrets) for more details on how to set up secrets.
-4. Configure your workflow. In the actions steps of run.yaml file use `Qualys/github_action_qwas@main`
+4. Configure your workflow. In the actions steps of run.yaml file use `Qualys/github-action-qwas@main`
 5. You can use the Input Parameters to customize GitHub Action as per your requirements.
 
 Note: The `actions/checkout` step is required to run before the scan action, otherwise the action does not have access to the Web apps to be scanned.
@@ -47,7 +47,7 @@ jobs:
                 fetch-depth: 0
     
           - name: Qualys WAS scan action step
-            uses: Qualys/github_action_qwas@main
+            uses: Qualys/github-action-qwas@main
             id: was
             with:
               API_SERVER: ${{ vars.API_SERVER }}
@@ -108,7 +108,7 @@ jobs:
           fetch-depth: 0
       
       - name: Qualys WAS scan action step
-        uses: Qualys/github_action_qwas@main
+        uses: Qualys/github-action-qwas@main
         id: was
         with:
           API_SERVER: ${{ vars.API_SERVER }}
@@ -166,7 +166,7 @@ jobs:
           fetch-depth: 0
       
       - name: Qualys WAS scan action step
-        uses: Qualys/github_action_qwas@main
+        uses: Qualys/github-action-qwas@main
         id: was
         with:
           API_SERVER: ${{ vars.API_SERVER }}
@@ -226,7 +226,7 @@ jobs:
           fetch-depth: 0
       
       - name: Qualys WAS scan action step
-        uses: Qualys/github_action_qwas@main
+        uses: Qualys/github-action-qwas@main
         id: was
         with:
           API_SERVER: ${{ vars.API_SERVER }}
