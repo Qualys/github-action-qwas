@@ -144,6 +144,10 @@ runs:
         INTERVAL: ${{ inputs.INTERVAL }}
         TIMEOUT: ${{ inputs.TIMEOUT }}
         FILE_TYPE: ${{ inputs.FILE_TYPE }}
+        AUTH_TYPE: ${{ inputs.AUTH_TYPE }}
+        PLATFORM: ${{ inputs.PLATFORM }}
+        CLIENT_ID: ${{ inputs.CLIENT_ID }}
+        CLIENT_SECRET: ${{ inputs.CLIENT_SECRET }}
       continue-on-error: true
       shell: bash
 
