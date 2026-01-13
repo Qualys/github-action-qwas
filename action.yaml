@@ -12,10 +12,10 @@ branding:
 inputs:
   QUALYS_USERNAME:
     description: "Qualys Username"
-    required: true
+    required: false
   QUALYS_PASSWORD:
     description: "Qualys Password"
-    required: true
+    required: false
   API_SERVER:
     description: "API Server URL"
     required: true
@@ -69,6 +69,18 @@ inputs:
     required: false
   FILE_TYPE:
     description: "File format to download artifact"
+    required: false
+  AUTH_TYPE:
+    description: "Auth Type BASIC/OAUTH"
+    required: true
+  PLATFORM:
+    description: "Qualys Platform"
+    required: true
+  CLIENT_ID:
+    description: "Client_id for OAUTH"
+    required: false
+  CLIENT_SECRET:
+    description: "Client-secret for OAUTH"
     required: false
 
 runs:
