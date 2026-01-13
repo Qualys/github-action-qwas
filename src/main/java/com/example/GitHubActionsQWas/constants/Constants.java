@@ -18,5 +18,6 @@ public class Constants {
     public static final String COMPLETE = "COMPLETE";
     public static final String UNKNOWN = "UNKNOWN";
     public static final String PDF_FORMAT = "PDF";
-
+    public static final String BASIC = "BASIC";
+    public static final String OAUTH = "OAUTH";
 }

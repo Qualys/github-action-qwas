@@ -1,6 +1,7 @@
 package com.example.GitHubActionsQWas.WASClient;
 
 import com.example.GitHubActionsQWas.WASAuth.WASAuth;
+import com.example.GitHubActionsQWas.constants.Constants;
 import com.example.GitHubActionsQWas.util.Helper;
 import com.google.gson.*;
 import org.apache.http.HttpEntity;
@@ -21,6 +22,8 @@ import java.io.PrintStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 import java.util.HashMap;
 
@@ -77,6 +80,10 @@ public class WASClient extends WASBaseClient {
         return this.get(this.apiMap.get("getReportStatus") + reportId);
     }
 
+    public CloseableHttpClient getCloseableHttpClient() throws NoSuchAlgorithmException, KeyManagementException {
+        return this.getHttpClient();
+    }
+
     private void download(String apiPath) {
         CloseableHttpClient httpClient = null;
 
@@ -86,7 +93,11 @@ public class WASClient extends WASBaseClient {
             httpClient = this.getHttpClient();
 
             HttpGet getRequest = new HttpGet(url.toString());
-            getRequest.addHeader("Authorization", "Basic " + this.getBasicAuthHeader());
+            if (Constants.BASIC.equals(auth.getAuthType())) {
+                getRequest.addHeader("Authorization", "Basic " + this.getBasicAuthHeader());
+            } else if (Constants.OAUTH.equals(auth.getAuthType())) {
+                getRequest.addHeader("Authorization", "Bearer " + auth.getAuthKey());
+            }
             CloseableHttpResponse response = httpClient.execute(getRequest);
             logger.debug("Server returned with ResponseCode: {}", response.getStatusLine().getStatusCode());
 
@@ -201,7 +212,11 @@ public class WASClient extends WASBaseClient {
 
             HttpGet getRequest = new HttpGet(url.toString());
             getRequest.addHeader("accept", "application/json");
-            getRequest.addHeader("Authorization", "Basic " + this.getBasicAuthHeader());
+            if (Constants.BASIC.equals(auth.getAuthType())) {
+                getRequest.addHeader("Authorization", "Basic " + this.getBasicAuthHeader());
+            } else if (Constants.OAUTH.equals(auth.getAuthType())) {
+                getRequest.addHeader("Authorization", "Bearer " + auth.getAuthKey());
+            }
             CloseableHttpResponse response = httpClient.execute(getRequest);
             apiResponse.responseCode = response.getStatusLine().getStatusCode();
             logger.debug("Server returned with ResponseCode: " + apiResponse.responseCode);
@@ -245,7 +260,11 @@ public class WASClient extends WASBaseClient {
 
             HttpPost postRequest = new HttpPost(url.toString());
             postRequest.addHeader("accept", "application/json");
-            postRequest.addHeader("Authorization", "Basic " + this.getBasicAuthHeader());
+            if (Constants.BASIC.equals(auth.getAuthType())) {
+                postRequest.addHeader("Authorization", "Basic " + this.getBasicAuthHeader());
+            } else if (Constants.OAUTH.equals(auth.getAuthType())) {
+                postRequest.addHeader("Authorization", "Bearer " + auth.getAuthKey());
+            }
             Gson gson = new Gson();
             if (requestData != null) {
                 postRequest.addHeader("Content-Type", "application/json");

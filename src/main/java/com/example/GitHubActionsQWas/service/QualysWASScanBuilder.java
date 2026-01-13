@@ -1,10 +1,14 @@
 package com.example.GitHubActionsQWas.service;
 
+import ch.qos.logback.core.util.StringUtil;
 import com.example.GitHubActionsQWas.WASAuth.WASAuth;
 import com.example.GitHubActionsQWas.WASClient.QualysWASResponse;
 import com.example.GitHubActionsQWas.WASClient.WASClient;
 import com.example.GitHubActionsQWas.constants.Constants;
+import com.example.GitHubActionsQWas.util.ApiGatewayUrl;
+import com.example.GitHubActionsQWas.util.ApiServerUrl;
 import com.example.GitHubActionsQWas.util.Helper;
+import com.example.GitHubActionsQWas.util.PortalUrl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -21,6 +25,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -36,6 +44,8 @@ public class QualysWASScanBuilder {
     private Environment environment;
     private String apiServer;
     private String portalServer;
+    private String gatewayServer;
+    private String platform;
     private String qualysUsername;
     private String qualysPasssword;
     private boolean useProxy = false;
@@ -76,11 +86,14 @@ public class QualysWASScanBuilder {
     private boolean waitForResult;
     private WASClient client;
     private String fileType;
+    private String authType;
+    private String clientId;
+    private String clientSecret;
+    private String qualysIdentificationUrl;
 
     public QualysWASScanBuilder(Environment environment) {
         try {
             this.environment = environment;
-            this.apiServer = environment.getProperty("API_SERVER", "");
             this.qualysUsername = environment.getProperty("QUALYS_USERNAME", "");
             this.qualysPasssword = environment.getProperty("QUALYS_PASSWORD", "");
             this.useProxy = environment.getProperty("USE_PROXY", Boolean.class, false);
@@ -107,6 +120,21 @@ public class QualysWASScanBuilder {
             this.interval = environment.getProperty("INTERVAL", Integer.class, 1);
             this.timeout = environment.getProperty("TIMEOUT", Integer.class, (60 * 5) + 50);
             this.fileType = environment.getProperty("FILE_TYPE", "PDF");
+            this.authType = environment.getProperty("AUTH_TYPE", "");
+            this.clientId = environment.getProperty("CLIENT_ID", "");
+            this.clientSecret = environment.getProperty("CLIENT_SECRET", "");
+            this.platform = environment.getProperty("PLATFORM", "");
+            this.qualysIdentificationUrl = "https://www.qualys.com/platform-identification";
+
+            if (StringUtil.notNullNorEmpty(platform)) {
+                this.apiServer = ApiServerUrl.getByKey(platform).getUrl();
+                this.portalServer = PortalUrl.getByKey(platform).getUrl();
+                this.gatewayServer = ApiGatewayUrl.getByKey(platform).getUrl();
+            } else {
+                throw new Exception("PLATFORM not specified, Please configure it and try again. Please visit following url to identify correct platform: " +
+                        qualysIdentificationUrl);
+            }
+
             this.severity1Limit = 0;
             this.severity2Limit = 0;
             this.severity3Limit = 0;
@@ -120,7 +148,7 @@ public class QualysWASScanBuilder {
                 assignSeverities();
             }
         } catch (Exception ex) {
-            logger.error("Something went wrong. Reason: " + ex.getCause());
+            logger.error("Something went wrong. Reason: " + ex.getMessage());
             System.exit(1);
         }
     }
@@ -173,10 +201,14 @@ public class QualysWASScanBuilder {
         }
     }
 
-    protected void initWASClient() {
-        WASAuth auth = new WASAuth();
-        auth.setWasCredentials(apiServer, qualysUsername, qualysPasssword);
-
+    protected void initWASClient() throws NoSuchAlgorithmException, KeyManagementException, IOException {
+        WASAuth auth = new WASAuth();;
+        if (authType.equals(Constants.BASIC)) {
+            auth.setWasCredentials(apiServer, qualysUsername, qualysPasssword, Constants.BASIC);
+        } else {
+            auth.setWasOAuthCredentials(gatewayServer, clientId, clientSecret, Constants.OAUTH);
+            auth.setOAuthKey();
+        }
 //        if (useProxy) {
 //            auth.setProxyCredentials(proxyServer, proxyPort, proxyUsername, proxyPassword);
 //        }
@@ -226,8 +258,6 @@ public class QualysWASScanBuilder {
      *
      */
     public void launchWebApplicationScan() {
-        portalServer = apiServer.replace("api", "guard");
-
         logger.info("Using Qualys API Server: " + apiServer);
 
         try {
@@ -410,7 +440,16 @@ public class QualysWASScanBuilder {
     }
 
     public boolean isMandatoryParametersSet() {
-        return !(this.apiServer == null || this.apiServer.isEmpty() || this.qualysUsername == null || this.qualysUsername.isEmpty() || this.qualysPasssword == null || this.qualysPasssword.isEmpty() || webAppId == null || webAppId.isEmpty() || scanName == null || scanName.isEmpty() || scanType == null || scanType.isEmpty());
+        return !(this.apiServer == null || this.apiServer.isEmpty() ||
+                this.qualysUsername == null || this.qualysUsername.isEmpty() ||
+                this.qualysPasssword == null || this.qualysPasssword.isEmpty() ||
+                this.webAppId == null || this.webAppId.isEmpty() ||
+                this.scanName == null || this.scanName.isEmpty() ||
+                this.scanType == null || this.scanType.isEmpty() ||
+                this.platform == null || this.platform.isEmpty()) ||
+                this.gatewayServer == null || this.gatewayServer.isEmpty() ||
+                this.portalServer == null || this.portalServer.isEmpty() ||
+                this.authType == null || this.authType.isEmpty();
     }
 
     protected boolean testConnection() {
