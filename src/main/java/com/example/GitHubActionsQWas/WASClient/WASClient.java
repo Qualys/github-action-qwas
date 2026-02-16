@@ -97,6 +97,7 @@ public class WASClient extends WASBaseClient {
                 getRequest.addHeader("Authorization", "Basic " + this.getBasicAuthHeader());
             } else if (Constants.OAUTH.equals(auth.getAuthType())) {
                 getRequest.addHeader("Authorization", "Bearer " + auth.getAuthKey());
+                getRequest.addHeader("request-source", "gateway");
             }
             CloseableHttpResponse response = httpClient.execute(getRequest);
             logger.debug("Server returned with ResponseCode: {}", response.getStatusLine().getStatusCode());
@@ -216,6 +217,7 @@ public class WASClient extends WASBaseClient {
                 getRequest.addHeader("Authorization", "Basic " + this.getBasicAuthHeader());
             } else if (Constants.OAUTH.equals(auth.getAuthType())) {
                 getRequest.addHeader("Authorization", "Bearer " + auth.getAuthKey());
+                getRequest.addHeader("request-source", "gateway");
             }
             CloseableHttpResponse response = httpClient.execute(getRequest);
             apiResponse.responseCode = response.getStatusLine().getStatusCode();
@@ -264,6 +266,7 @@ public class WASClient extends WASBaseClient {
                 postRequest.addHeader("Authorization", "Basic " + this.getBasicAuthHeader());
             } else if (Constants.OAUTH.equals(auth.getAuthType())) {
                 postRequest.addHeader("Authorization", "Bearer " + auth.getAuthKey());
+                postRequest.addHeader("request-source", "gateway");
             }
             Gson gson = new Gson();
             if (requestData != null) {

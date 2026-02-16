@@ -440,16 +440,24 @@ public class QualysWASScanBuilder {
     }
 
     public boolean isMandatoryParametersSet() {
-        return !(this.apiServer == null || this.apiServer.isEmpty() ||
-                this.qualysUsername == null || this.qualysUsername.isEmpty() ||
-                this.qualysPasssword == null || this.qualysPasssword.isEmpty() ||
+        boolean isMandatoryParametersSet = !(this.apiServer == null || this.apiServer.isEmpty() ||
                 this.webAppId == null || this.webAppId.isEmpty() ||
                 this.scanName == null || this.scanName.isEmpty() ||
                 this.scanType == null || this.scanType.isEmpty() ||
-                this.platform == null || this.platform.isEmpty()) ||
-                this.gatewayServer == null || this.gatewayServer.isEmpty() ||
-                this.portalServer == null || this.portalServer.isEmpty() ||
-                this.authType == null || this.authType.isEmpty();
+                this.platform == null || this.platform.isEmpty() ||
+                this.authType == null || this.authType.isEmpty());
+
+        if (authType != null && !authType.isEmpty()) {
+            if (authType.equals(Constants.OAUTH) && isMandatoryParametersSet) {
+                isMandatoryParametersSet = clientId == null || clientId.isEmpty() ||
+                        clientSecret == null || clientSecret.isEmpty();
+            } else if (authType.equals(Constants.BASIC) && isMandatoryParametersSet) {
+                isMandatoryParametersSet = qualysUsername == null || qualysUsername.isEmpty() ||
+                        qualysPasssword == null || qualysPasssword.isEmpty();
+            }
+        }
+
+        return isMandatoryParametersSet;
     }
 
     protected boolean testConnection() {
