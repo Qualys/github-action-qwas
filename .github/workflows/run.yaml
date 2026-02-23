@@ -1,11 +1,11 @@
 name: Qualys WAS Scan GitHub Actions
- 
+
 on:
   push:
     branches:
       - main
   workflow_dispatch:
- 
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -88,17 +88,13 @@ jobs:
           INTERVAL: ${{ vars.INTERVAL }}
           TIMEOUT: ${{ vars.TIMEOUT }}
           FILE_TYPE: ${{ vars.FILE_TYPE }}
-          PLATFORM: ${{ vars.PLATFORM }}
-          AUTH_TYPE: ${{ vars.AUTH_TYPE }}
-          CLIENT_ID: ${{ vars.CLIENT_ID }}
-          CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
         continue-on-error: true
       
       - name: Upload Scan Report
         uses: actions/upload-artifact@v4
         with:
           name: Qualys_WAS_Scan_Result
-          path: ./outputs/
+          path: ./outputs
           if-no-files-found: ignore
           
       - name: Check build status
