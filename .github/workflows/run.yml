@@ -88,6 +88,10 @@ jobs:
           INTERVAL: ${{ vars.INTERVAL }}
           TIMEOUT: ${{ vars.TIMEOUT }}
           FILE_TYPE: ${{ vars.FILE_TYPE }}
+          PLATFORM: ${{ vars.PLATFORM }}
+          AUTH_TYPE: ${{ vars.AUTH_TYPE }}
+          CLIENT_ID: ${{ vars.CLIENT_ID }}
+          CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
         continue-on-error: true
       
       - name: Upload Scan Report

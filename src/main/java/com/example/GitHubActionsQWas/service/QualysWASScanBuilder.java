@@ -449,11 +449,13 @@ public class QualysWASScanBuilder {
 
         if (authType != null && !authType.isEmpty()) {
             if (authType.equals(Constants.OAUTH) && isMandatoryParametersSet) {
-                isMandatoryParametersSet = clientId == null || clientId.isEmpty() ||
-                        clientSecret == null || clientSecret.isEmpty();
+                isMandatoryParametersSet = !(clientId == null || clientId.isEmpty() ||
+                        clientSecret == null || clientSecret.isEmpty());
+                logger.error("Client ID or Client Secret is not set for Auth-Type: {}", authType);
             } else if (authType.equals(Constants.BASIC) && isMandatoryParametersSet) {
-                isMandatoryParametersSet = qualysUsername == null || qualysUsername.isEmpty() ||
-                        qualysPasssword == null || qualysPasssword.isEmpty();
+                isMandatoryParametersSet = !(qualysUsername == null || qualysUsername.isEmpty() ||
+                        qualysPasssword == null || qualysPasssword.isEmpty());
+                logger.error("Username or Password is not set for Auth-Type: {}", authType);
             }
         }
 
