@@ -1,6 +1,7 @@
 package com.example.GitHubActionsQWas.WASClient;
 
 import com.example.GitHubActionsQWas.WASAuth.WASAuth;
+import com.example.GitHubActionsQWas.constants.Constants;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import org.junit.jupiter.api.Test;
@@ -92,7 +93,7 @@ class WASClientTest {
 
     @Test
     public void test_response_code_zero() {
-        WASClient client = spy(new WASClient(new WASAuth()));
+        WASClient client = spy(new WASClient(new WASAuth("")));
         when(client.getWebAppCount()).thenReturn(null);
         QualysWASResponse response = new QualysWASResponse();
         response.responseCode = -1;
@@ -125,7 +126,7 @@ class WASClientTest {
         mockResponse.response = responseObject;
 
         // Mock getWebAppCount() to return the mock response
-        WASClient wasClient = spy(new WASClient(new WASAuth()));
+        WASClient wasClient = spy(new WASClient(new WASAuth("")));
         Mockito.when(wasClient.getWebAppCount()).thenReturn(mockResponse);
 
         // Test the behavior
@@ -236,8 +237,8 @@ class WASClientTest {
     @Test
     public void test_returns_qualyswasresponse_object() {
         // Arrange
-        WASAuth auth = new WASAuth();
-        auth.setWasCredentials("https://example.com", "username", "password");
+        WASAuth auth = new WASAuth("");
+        auth.setWasCredentials("https://example.com", "username", "password", Constants.BASIC);
         WASClient wasClient = new WASClient(auth);
         JsonObject requestData = new JsonObject();
 

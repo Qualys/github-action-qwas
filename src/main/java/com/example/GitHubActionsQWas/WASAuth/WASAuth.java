@@ -1,8 +1,10 @@
 package com.example.GitHubActionsQWas.WASAuth;
 
+import ch.qos.logback.core.util.StringUtil;
 import com.example.GitHubActionsQWas.WASClient.QualysWASResponse;
 import com.example.GitHubActionsQWas.WASClient.WASBaseClient;
 import com.example.GitHubActionsQWas.WASClient.WASClient;
+import com.example.GitHubActionsQWas.util.ApiServerUrl;
 import lombok.Getter;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -26,17 +28,15 @@ public class WASAuth {
     private String clientSecret;
     private String authKey;
     private String authType;
+    private String platform;
     private String proxyServer;
     private String proxyUsername;
     private String proxyPassword;
     private int proxyPort;
     private final Logger logger = LoggerFactory.getLogger(WASClient.class);
 
-    public WASAuth() {
-    }
-
-    public WASAuth(String oauthKey) {
-        this.authKey = oauthKey;
+    public WASAuth(String platform) {
+        this.platform = platform;
     }
 
     public void setWasCredentials(String server, String username, String password, String authType) {
@@ -53,7 +53,7 @@ public class WASAuth {
         this.authType = authType;
     }
 
-    public void setOAuthKey() throws NoSuchAlgorithmException, KeyManagementException, IOException {
+    public void setOAuthKey() throws Exception {
         WASClient client = new WASClient(this);
         CloseableHttpClient httpClient = client.getCloseableHttpClient();
 
@@ -69,5 +69,8 @@ public class WASAuth {
         logger.info("Server returned with ResponseCode: " + httpResponse.getStatusLine().getStatusCode());
         this.authKey = EntityUtils.toString(httpResponse.getEntity(), "UTF-8");
         logger.warn("OAUTH Key is generated successfully...");
+        if (StringUtil.notNullNorEmpty(this.platform)) {
+            this.server = ApiServerUrl.getByKey(platform).getUrl();
+        }
     }
 }

@@ -201,8 +201,8 @@ public class QualysWASScanBuilder {
         }
     }
 
-    protected void initWASClient() throws NoSuchAlgorithmException, KeyManagementException, IOException {
-        WASAuth auth = new WASAuth();;
+    protected void initWASClient() throws Exception {
+        WASAuth auth = new WASAuth(this.platform);
         if (authType.equals(Constants.BASIC)) {
             auth.setWasCredentials(apiServer, qualysUsername, qualysPasssword, Constants.BASIC);
         } else {
