@@ -50,9 +50,12 @@ jobs:
             uses: Qualys/github-action-qwas@main
             id: was
             with:
-              API_SERVER: ${{ vars.API_SERVER }}
+              PLATFORM: ${{ vars.PLATFORM }}
+              AUTH_TYPE: ${{ vars.AUTH_TYPE }}
               QUALYS_USERNAME: ${{ vars.QUALYS_USERNAME }}
               QUALYS_PASSWORD: ${{ secrets.QUALYS_PASSWORD }}
+              CLIENT_ID: ${{ vars.CLIENT_ID }}
+              CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
               WEBAPP_ID: ${{ vars.WEBAPP_ID }}
               SCAN_NAME: ${{ vars.SCAN_NAME }}
               SCAN_TYPE: ${{ vars.SCAN_TYPE }}
@@ -111,9 +114,12 @@ jobs:
         uses: Qualys/github-action-qwas@main
         id: was
         with:
-          API_SERVER: ${{ vars.API_SERVER }}
+          PLATFORM: ${{ vars.PLATFORM }}
+          AUTH_TYPE: ${{ vars.AUTH_TYPE }}
           QUALYS_USERNAME: ${{ vars.QUALYS_USERNAME }}
           QUALYS_PASSWORD: ${{ secrets.QUALYS_PASSWORD }}
+          CLIENT_ID: ${{ vars.CLIENT_ID }}
+          CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
           WEBAPP_ID: ${{ vars.WEBAPP_ID }}
           SCAN_NAME: ${{ vars.SCAN_NAME }}
           SCAN_TYPE: ${{ vars.SCAN_TYPE }}
@@ -169,9 +175,12 @@ jobs:
         uses: Qualys/github-action-qwas@main
         id: was
         with:
-          API_SERVER: ${{ vars.API_SERVER }}
+          PLATFORM: ${{ vars.PLATFORM }}
+          AUTH_TYPE: ${{ vars.AUTH_TYPE }}
           QUALYS_USERNAME: ${{ vars.QUALYS_USERNAME }}
           QUALYS_PASSWORD: ${{ secrets.QUALYS_PASSWORD }}
+          CLIENT_ID: ${{ vars.CLIENT_ID }}
+          CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
           WEBAPP_ID: ${{ vars.WEBAPP_ID }}
           SCAN_NAME: ${{ vars.SCAN_NAME }}
           SCAN_TYPE: ${{ vars.SCAN_TYPE }}
@@ -229,9 +238,12 @@ jobs:
         uses: Qualys/github-action-qwas@main
         id: was
         with:
-          API_SERVER: ${{ vars.API_SERVER }}
+          PLATFORM: ${{ vars.PLATFORM }}
+          AUTH_TYPE: ${{ vars.AUTH_TYPE }}
           QUALYS_USERNAME: ${{ vars.QUALYS_USERNAME }}
           QUALYS_PASSWORD: ${{ secrets.QUALYS_PASSWORD }}
+          CLIENT_ID: ${{ vars.CLIENT_ID }}
+          CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
           WEBAPP_ID: ${{ vars.WEBAPP_ID }}
           SCAN_NAME: ${{ vars.SCAN_NAME }}
           SCAN_TYPE: ${{ vars.SCAN_TYPE }}
@@ -278,9 +290,12 @@ If repository is private, then add PAT (personal access token) token in the chec
 
 | Parameter          | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | Mandatory/ Optional | Default Value | Parameter Type |
 |--------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------|---------------|----------------|
-| QUALYS_PASSWORD    | Use the Qualys Password                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          | Mandatory           | ""            | Secret         |
-| QUALYS_USERNAME    | Use the Qualys Username                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          | Mandatory           | ""            | Variable       |
-| API_SERVER         | Use the API URL. [Click here](https://www.qualys.com/platform-identification/) to get your API URL. (Make sure that you provide API server URL only. Platform URL or API Gateway URL is not valid)                                                                                                                                                                                                                                                                                                                                               | Mandatory           | ""            | Variable       |
+| PLATFORM           | This parameter specifies the qualys platform.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | Mandatory           | ""            | Variable       |
+| AUTH_TYPE          | This parameter specifies the authentication type. BASIC and OAUTH are supported                                                                                                                                                                                                                                                                                                                                                                                                                                                                  | Mandatory           | ""            | Variable       | 
+| QUALYS_PASSWORD    | Use the Qualys Password will be used in BASIC authentication.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | Mandatory for BASIC | ""            | Secret         |
+| QUALYS_USERNAME    | Use the Qualys Username will be used in BASIC authentication.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | Mandatory for BASIC | ""            | Variable       |
+| CLIENT_ID          | This parameter specifies the client id will be used in OAUTH authentication.                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | Mandatory for OAUTH | ""            | Variable       |
+| CLIENT_SECRET      | This parameter specifies the client secret will be used in OAUTH authentication.                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | Mandatory for OAUTH | ""            | Secret         |
 | WEBAPP_ID          | Use the Web App ID that you want to scan.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | Mandatory           | ""            | Variable       |
 | SCAN_NAME          | Use any name for the scan. The timestamp gets appended automatically.                                                                                                                                                                                                                                                                                                                                                                                                                                                                            | Mandatory           | ""            | Variable       |
 | SCAN_TYPE          | This parameter specifies the scan type. Use VULNERABILITY or DISCOVERY as a parameter value.                                                                                                                                                                                                                                                                                                                                                                                                                                                     | Mandatory           | ""            | Variable       |

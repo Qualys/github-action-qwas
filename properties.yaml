@@ -1,0 +1,27 @@
+### Tools #####
+maven: apache-maven-3.9.4
+jdk: JDK_17
+ 
+### Source code properties ###
+#signtools-checkout: true
+ 
+#### Project properties ###
+project-name: github-was-action
+image-path: qualys/qint/github-was-action
+artifacts-to-archive: target/github-was-action*.jar
+is-instrumentation-enabled: false
+ 
+#build-additional-args: -Drelease.number="${BUILD_ID}"
+build-additional-args: -DskipTests=true
+
+# BlackDuck properties
+is-blackduck-enabled: true
+blackduck-project-name: apiintegration_github-was-action
+blackduck-artifacts-to-scan: /
+ 
+## Notification Properties ##
+email-notifications:
+teams-webhook-url: https://qualys.webhook.office.com/webhookb2/fb013c9c-125f-4fed-940f-0403fcaceb2e@81a9ef9a-9a98-4b00-886a-895a603bc029/IncomingWebhook/1d8267aff251406ba66d2f0b8cd9cc86/8769138b-5890-4644-ab24-5826018693e4
+
+is-coverity-enabled : true
+cov-project-name: QINT
