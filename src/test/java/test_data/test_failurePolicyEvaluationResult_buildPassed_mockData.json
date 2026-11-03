@@ -1,0 +1,104 @@
+{
+	"passed": true,
+	"result": {
+		"qids": null,
+		"severities": {
+			"1": {
+				"configured": 1,
+				"found": 0,
+				"result": true
+			},
+			"2": {
+				"configured": 1,
+				"found": 1,
+				"result": true
+			},
+			"3": {
+				"configured": 1,
+				"found": 1,
+				"result": true
+			},
+			"4": {
+				"configured": 1,
+				"found": 0,
+				"result": true
+			},
+			"5": {
+				"configured": 1,
+				"found": 0,
+				"result": true
+			}
+		},
+		"vulnsTable": {
+			"list": [
+				{
+					"WasScanVuln": {
+						"instances": {
+							"list": [
+								{
+									"WasScanVulnInstance": {
+										"authenticated": "false",
+										"payloads": {
+											"list": [
+												{
+													"WasScanVulnPayload": {
+														"payload": "http://www.gxmail.com/webmail/",
+														"result": {
+															"base64": "true",
+															"value": "Y29tbWVudDogCk9yaWdpbmFsIFVSTCBpczogaHR0cDovL3d3dy5neG1haWwuY29tLwoKSFRUUC8xLjEgMjAwIE9L"
+														}
+													}
+												}
+											],
+											"count": 1
+										}
+									}
+								}
+							],
+							"count": 1
+						},
+						"severity": "2",
+						"uri": "http://www.gxmail.com/webmail/",
+						"potential": "false",
+						"qid": 150004,
+						"title": "Path-Based Vulnerability"
+					}
+				},
+				{
+					"WasScanVuln": {
+						"instances": {
+							"list": [
+								{
+									"WasScanVulnInstance": {
+										"authenticated": "false",
+										"payloads": {
+											"list": [
+												{
+													"WasScanVulnPayload": {
+														"payload": "",
+														"result": {
+															"base64": "true",
+															"value": "SFRUUC8xLjEgMjAwIE9LCkRhdGU6IFdlZCwgMzEgSmFuIDIwMjQgMDk6NTk6MzIgR01UDQpTZXJ2ZXI6IEFwYWNoZQ0KVXBncmFkZTogaDIsaDJjDQpDb25uZWN0aW9uOiBVcGdyYWRlLCBjbG9zZQ0KTGFzdC1Nb2RpZmllZDogTW9uLCAyMyBKYW4gMjAxNyAwNDozMTozNCBHTVQNCkFjY2VwdC1SYW5nZXM6IGJ5dGVzDQpDb250ZW50LUxlbmd0aDogNDI5DQpDb250ZW50LVR5cGU6IHRleHQvaHRtbA0KCiZsdDshRE9DVFlQRSBodG1sIFBVQkxJQyAiLS8vVzNDLy9EVEQgWEhUTUwgMS4wIFRyYW5zaXRpb25hbC8vRU4iICJodHRwOi8vd3d3LnczLm9yZy9UUi94aHRtbDEvRFREL3hodG1sMS10cmFuc2l0aW9uYWwuZHRkIiZndDsmbHQ7aHRtbCB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94aHRtbCImZ3Q7Jmx0O2hlYWQmZ3Q7CiZsdDttZXRhIGh0dHAtZXF1aXY9IkNvbnRlbnQtVHlwZSIgY29udGVudD0idGV4dC9odG1sOyBjaGFyc2V0PWlzby04ODU5LTEiJmd0OwombHQ7dGl0bGUmZ3Q7Z3htYWlsLmNvbSAtIFByaXZhdGUgZG9tYWluJmx0Oy90aXRsZSZndDsKJmx0Oy9oZWFkJmd0OwombHQ7Ym9keSZndDsKJmx0O3AgYWxpZ249ImNlbnRlciImZ3Q7Jmx0O2ltZyBzcmM9Imd4bWFpbC5wbmciIGFsdD0iZ3htYWlsLmNvbSAtIFByaXZhdGUgZG9tYWluIiB3aWR0aD0iMzI3IiBoZWlnaHQ9IjE5OCImZ3Q7Jmx0Oy9wJmd0OwoKCgombHQ7L2JvZHkmZ3Q7Jmx0Oy9odG1sJmd0Ow=="
+														}
+													}
+												}
+											],
+											"count": 1
+										}
+									}
+								}
+							],
+							"count": 1
+						},
+						"severity": "3",
+						"uri": "http://www.gxmail.com/",
+						"potential": "false",
+						"qid": 150263,
+						"title": "Insecure Transport"
+					}
+				}
+			],
+			"count": 2
+		}
+	}
+}

@@ -1,13 +1,11 @@
 package com.example.GitHubActionsQWas.service;
 
+import ch.qos.logback.core.util.StringUtil;
 import com.example.GitHubActionsQWas.WASAuth.WASAuth;
 import com.example.GitHubActionsQWas.WASClient.QualysWASResponse;
 import com.example.GitHubActionsQWas.WASClient.WASClient;
 import com.example.GitHubActionsQWas.constants.Constants;
 import com.example.GitHubActionsQWas.util.Helper;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -20,6 +18,8 @@ import org.apache.tomcat.util.buf.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +36,7 @@ public class QualysWASScanBuilder {
     private Environment environment;
     private String apiServer;
     private String portalServer;
+    private String gatewayServer;
     private String qualysUsername;
     private String qualysPasssword;
     private boolean useProxy = false;
@@ -76,11 +77,18 @@ public class QualysWASScanBuilder {
     private boolean waitForResult;
     private WASClient client;
     private String fileType;
+    private String authType;
+    private String clientId;
+    private String clientSecret;
+    private String qualysIdentificationUrl;
+    private String idpTokenUrl;
+    private String idpScope;
+    private String idpAudience;
+    private boolean sendMail;
 
     public QualysWASScanBuilder(Environment environment) {
         try {
             this.environment = environment;
-            this.apiServer = environment.getProperty("API_SERVER", "");
             this.qualysUsername = environment.getProperty("QUALYS_USERNAME", "");
             this.qualysPasssword = environment.getProperty("QUALYS_PASSWORD", "");
             this.useProxy = environment.getProperty("USE_PROXY", Boolean.class, false);
@@ -107,6 +115,28 @@ public class QualysWASScanBuilder {
             this.interval = environment.getProperty("INTERVAL", Integer.class, 1);
             this.timeout = environment.getProperty("TIMEOUT", Integer.class, (60 * 5) + 50);
             this.fileType = environment.getProperty("FILE_TYPE", "PDF");
+            this.authType = environment.getProperty("AUTH_TYPE", "");
+            this.clientId = environment.getProperty("CLIENT_ID", "");
+            this.clientSecret = environment.getProperty("CLIENT_SECRET", "");
+            this.apiServer = environment.getProperty("API_SERVER", "");
+            this.qualysIdentificationUrl = "https://www.qualys.com/platform-identification";
+            this.idpTokenUrl = environment.getProperty("IDP_TOKEN_URL", "");
+            this.idpScope = environment.getProperty("IDP_SCOPE", "");
+            this.idpAudience = environment.getProperty("IDP_AUDIENCE", "");
+            this.sendMail = environment.getProperty("SEND_MAIL", Boolean.class, true);
+
+            if (StringUtil.notNullNorEmpty(apiServer)) {
+                this.apiServer = Helper.normalizeUrl(apiServer);
+                if (!this.apiServer.toLowerCase().startsWith("https://")) {
+                    throw new Exception("API_SERVER must use https:// protocol. Got: " + this.apiServer);
+                }
+                this.portalServer = Helper.derivePortalUrl(this.apiServer);
+                this.gatewayServer = Helper.deriveGatewayUrl(this.apiServer);
+            } else {
+                throw new Exception("API_SERVER not specified, Please configure it and try again. Please visit following url to identify correct API server URL for your platform: " +
+                        qualysIdentificationUrl);
+            }
+
             this.severity1Limit = 0;
             this.severity2Limit = 0;
             this.severity3Limit = 0;
@@ -120,7 +150,7 @@ public class QualysWASScanBuilder {
                 assignSeverities();
             }
         } catch (Exception ex) {
-            logger.error("Something went wrong. Reason: " + ex.getCause());
+            logger.error("Something went wrong. Reason: " + ex.getMessage());
             System.exit(1);
         }
     }
@@ -173,10 +203,18 @@ public class QualysWASScanBuilder {
         }
     }
 
-    protected void initWASClient() {
-        WASAuth auth = new WASAuth();
-        auth.setWasCredentials(apiServer, qualysUsername, qualysPasssword);
-
+    protected void initWASClient() throws Exception {
+        logger.info("Using Auth Type: {}", authType);
+        WASAuth auth = new WASAuth(this.apiServer);
+        if (authType.equals(Constants.BASIC)) {
+            auth.setWasCredentials(apiServer, qualysUsername, qualysPasssword, Constants.BASIC);
+        } else if (authType.equals(Constants.IDP)) {
+            auth.setWasIDPCredentials(apiServer, clientId, clientSecret, idpTokenUrl, idpScope, idpAudience, Constants.IDP);
+            auth.setIDPOAuthToken();
+        } else {
+            auth.setWasOAuthCredentials(gatewayServer, clientId, clientSecret, Constants.OAUTH);
+            auth.setOAuthKey();
+        }
 //        if (useProxy) {
 //            auth.setProxyCredentials(proxyServer, proxyPort, proxyUsername, proxyPassword);
 //        }
@@ -226,8 +264,6 @@ public class QualysWASScanBuilder {
      *
      */
     public void launchWebApplicationScan() {
-        portalServer = apiServer.replace("api", "guard");
-
         logger.info("Using Qualys API Server: " + apiServer);
 
         try {
@@ -239,7 +275,7 @@ public class QualysWASScanBuilder {
                     isFailConditionConfigured = true;
                 }
 
-                QualysWASScanService service = QualysWASScanService.builder().webAppId(webAppId).scanName(scanName).scanType(scanType).authRecord(authRecord).authRecordId(authRecordId).optionProfile(optionProfile).optionProfileId(optionProfileId).cancelOptions(cancelOptions).cancelHours(cancelHours).isFailConditionsConfigured(isFailConditionConfigured).pollingIntervalForVulns(Helper.setTimeoutInMinutes("pollingInterval", DEFAULT_POLLING_INTERVAL_FOR_VULNS, pollingInterval)).vulnsTimeout(Helper.setTimeoutInMinutes("vulnsTimeout", DEFAULT_TIMEOUT_FOR_VULNS, vulnsTimeout)).criteriaObject(getCriteriaAsJsonObject()).apiServer(apiServer).apiUser(qualysUsername).apiPass(qualysPasssword).useProxy(useProxy).proxyServer(proxyServer).proxyPort(proxyPort).proxyUsername(proxyUsername).proxyPassword(proxyPassword).portalUrl(portalServer).failOnScanError(isFailOnScanError).apiClient(client).build();
+                QualysWASScanService service = QualysWASScanService.builder().webAppId(webAppId).scanName(scanName).scanType(scanType).authRecord(authRecord).authRecordId(authRecordId).optionProfile(optionProfile).optionProfileId(optionProfileId).cancelOptions(cancelOptions).cancelHours(cancelHours).isFailConditionsConfigured(isFailConditionConfigured).pollingIntervalForVulns(Helper.setTimeoutInMinutes("pollingInterval", DEFAULT_POLLING_INTERVAL_FOR_VULNS, pollingInterval)).vulnsTimeout(Helper.setTimeoutInMinutes("vulnsTimeout", DEFAULT_TIMEOUT_FOR_VULNS, vulnsTimeout)).criteriaObject(getCriteriaAsJsonObject()).apiServer(apiServer).apiUser(qualysUsername).apiPass(qualysPasssword).useProxy(useProxy).proxyServer(proxyServer).proxyPort(proxyPort).proxyUsername(proxyUsername).proxyPassword(proxyPassword).portalUrl(portalServer).failOnScanError(isFailOnScanError).sendMail(sendMail).apiClient(client).build();
 
                 logger.info("Qualys task - Started Launching web app scanning with WAS");
                 String scanId = launchWasScan(service);
@@ -410,7 +446,30 @@ public class QualysWASScanBuilder {
     }
 
     public boolean isMandatoryParametersSet() {
-        return !(this.apiServer == null || this.apiServer.isEmpty() || this.qualysUsername == null || this.qualysUsername.isEmpty() || this.qualysPasssword == null || this.qualysPasssword.isEmpty() || webAppId == null || webAppId.isEmpty() || scanName == null || scanName.isEmpty() || scanType == null || scanType.isEmpty());
+        boolean isMandatoryParametersSet = !(this.apiServer == null || this.apiServer.isEmpty() ||
+                this.webAppId == null || this.webAppId.isEmpty() ||
+                this.scanName == null || this.scanName.isEmpty() ||
+                this.scanType == null || this.scanType.isEmpty() ||
+                this.authType == null || this.authType.isEmpty());
+
+        if (authType != null && !authType.isEmpty()) {
+            if (authType.equals(Constants.OAUTH) && isMandatoryParametersSet) {
+                isMandatoryParametersSet = !(clientId == null || clientId.isEmpty() ||
+                        clientSecret == null || clientSecret.isEmpty());
+                if (!isMandatoryParametersSet) logger.error("Client ID or Client Secret is not set for Auth-Type: {}", authType);
+            } else if (authType.equals(Constants.IDP) && isMandatoryParametersSet) {
+                isMandatoryParametersSet = !(clientId == null || clientId.isEmpty() ||
+                        clientSecret == null || clientSecret.isEmpty() ||
+                        idpTokenUrl == null || idpTokenUrl.isEmpty());
+                if (!isMandatoryParametersSet) logger.error("Client ID, Client Secret, or IDP Token URL is not set for Auth-Type: {}", authType);
+            } else if (authType.equals(Constants.BASIC) && isMandatoryParametersSet) {
+                isMandatoryParametersSet = !(qualysUsername == null || qualysUsername.isEmpty() ||
+                        qualysPasssword == null || qualysPasssword.isEmpty());
+                if (!isMandatoryParametersSet) logger.error("Username or Password is not set for Auth-Type: {}", authType);
+            }
+        }
+
+        return isMandatoryParametersSet;
     }
 
     protected boolean testConnection() {
@@ -463,7 +522,7 @@ public class QualysWASScanBuilder {
             } else {
                 logger.error("Create Report API failed for scanId : {}", scanId);
             }
-        } catch (JsonProcessingException e) {
+        } catch (Exception e) {
             logger.error("Failed to read Create Report API response. Error: {}", e.getMessage());
         }
 
@@ -508,8 +567,6 @@ public class QualysWASScanBuilder {
                     Thread.sleep(30000);
                 }
             }
-        } catch (JsonProcessingException e) {
-            logger.error("Failed to parse Report Status API response. Error: {}", e.getMessage());
         } catch (InterruptedException e) {
             logger.error("Process Interrupted, exiting...");
         }
