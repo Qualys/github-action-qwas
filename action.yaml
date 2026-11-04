@@ -17,8 +17,26 @@ inputs:
     description: "Qualys Password"
     required: true
   API_SERVER:
-    description: "API Server URL"
+    description: "Qualys API Server URL (e.g. https://qualysapi.qualys.com)"
     required: true
+  AUTH_TYPE:
+    description: "Auth Type (BASIC, OAUTH, or IDP)"
+    required: true
+  CLIENT_ID:
+    description: "Qualys API Client ID (for OAUTH/IDP)"
+    required: false
+  CLIENT_SECRET:
+    description: "Qualys API Client Secret (for OAUTH/IDP)"
+    required: false
+  IDP_TOKEN_URL:
+    description: "IDP Token URL (for IDP auth)"
+    required: false
+  IDP_SCOPE:
+    description: "IDP Scope (for IDP auth)"
+    required: false
+  IDP_AUDIENCE:
+    description: "IDP Audience (for IDP auth)"
+    required: false
   SCAN_NAME:
     description: "Scan Name"
     required: true
@@ -70,51 +88,70 @@ inputs:
   FILE_TYPE:
     description: "File format to download artifact"
     required: false
+  ARTIFACT_RETENTION_DAYS:
+    description: "Days to retain the scan result artifact (1-90). Defaults to the repository/organization artifact retention setting."
+    required: false
+  SEND_MAIL:
+    description: "Send scan complete email notifications (default true). Set to false to disable."
+    required: false
 
 runs:
   using: composite
   steps:
     - name: Setting up GitHub Repository
       uses: actions/checkout@v4
+      env:
+        ACTION_REF: ${{ github.action_ref }}
       with:
         repository: Qualys/github-action-qwas
-
+        ref: ${{ env.ACTION_REF }}
+        path: qwas-action
+      
     - name: Setting up Maven Wrapper
       if: runner.os != 'Windows'
       run: chmod +x ./mvnw
       shell: bash
-
+      working-directory: qwas-action
+    
     - name: Setting up Java Environment
-      uses: actions/setup-java@v4
+      uses: actions/setup-java@v3
       with:
         java-version: '17'
         distribution: 'oracle'
-
+    
     - name: Caching Maven dependencies
-      uses: actions/cache@v4
+      uses: actions/cache@v3
       with:
         path: ~/.m2/repository
-        key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+        key: ${{ runner.os }}-maven-${{ hashFiles('qwas-action/pom.xml') }}
         restore-keys: |
           ${{ runner.os }}-maven-
-
+    
     - name: Building plugin with Maven
       run: ./mvnw clean package
       shell: bash
-
+      working-directory: qwas-action
+    
     - name: Storing Maven dependencies in cache
-      uses: actions/cache@v4
+      uses: actions/cache@v3
       with:
         path: ~/.m2/repository
-        key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-
+        key: ${{ runner.os }}-maven-${{ hashFiles('qwas-action/pom.xml') }}
+    
     - name: Spinning up Qualys WAS Scan Plugin
       run: java -jar ./target/GitHubActionsQWas-0.0.1-SNAPSHOT.jar
       id: run-app
+      working-directory: qwas-action
       env:
         API_SERVER: ${{ inputs.API_SERVER }}
+        AUTH_TYPE: ${{ inputs.AUTH_TYPE }}
         QUALYS_USERNAME: ${{ inputs.QUALYS_USERNAME }}
         QUALYS_PASSWORD: ${{ inputs.QUALYS_PASSWORD }}
+        CLIENT_ID: ${{ inputs.CLIENT_ID }}
+        CLIENT_SECRET: ${{ inputs.CLIENT_SECRET }}
+        IDP_TOKEN_URL: ${{ inputs.IDP_TOKEN_URL }}
+        IDP_SCOPE: ${{ inputs.IDP_SCOPE }}
+        IDP_AUDIENCE: ${{ inputs.IDP_AUDIENCE }}
         WEBAPP_ID: ${{ inputs.WEBAPP_ID }}
         SCAN_NAME: ${{ inputs.SCAN_NAME }}
         SCAN_TYPE: ${{ inputs.SCAN_TYPE }}
@@ -132,15 +169,17 @@ runs:
         INTERVAL: ${{ inputs.INTERVAL }}
         TIMEOUT: ${{ inputs.TIMEOUT }}
         FILE_TYPE: ${{ inputs.FILE_TYPE }}
+        SEND_MAIL: ${{ inputs.SEND_MAIL }}
       continue-on-error: true
       shell: bash
-
+    
     - name: Uploading Qualys WAS Scan Result
       uses: actions/upload-artifact@v4
       with:
         name: Qualys_WAS_Scan_Result
-        path: ./outputs/
-
+        path: qwas-action/outputs/
+        retention-days: ${{ inputs.ARTIFACT_RETENTION_DAYS }}
+    
     - name: Checking for Qualys WAS Scan Plugin Failure
       if: steps.run-app.outcome != 'success'
       run: exit 1

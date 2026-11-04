@@ -1,6 +1,7 @@
 package com.example.GitHubActionsQWas.WASClient;
 
 import com.example.GitHubActionsQWas.WASAuth.WASAuth;
+import com.example.GitHubActionsQWas.constants.Constants;
 import com.example.GitHubActionsQWas.util.Helper;
 import com.google.gson.*;
 import org.apache.http.HttpEntity;
@@ -15,12 +16,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 import java.util.HashMap;
 
@@ -77,8 +81,13 @@ public class WASClient extends WASBaseClient {
         return this.get(this.apiMap.get("getReportStatus") + reportId);
     }
 
+    public CloseableHttpClient getCloseableHttpClient() throws NoSuchAlgorithmException, KeyManagementException {
+        return this.getHttpClient();
+    }
+
     private void download(String apiPath) {
         CloseableHttpClient httpClient = null;
+        boolean retried = false;
 
         try {
             URL url = this.getAbsoluteUrl(apiPath);
@@ -86,9 +95,34 @@ public class WASClient extends WASBaseClient {
             httpClient = this.getHttpClient();
 
             HttpGet getRequest = new HttpGet(url.toString());
-            getRequest.addHeader("Authorization", "Basic " + this.getBasicAuthHeader());
+            if (Constants.BASIC.equals(auth.getAuthType())) {
+                getRequest.addHeader("Authorization", "Basic " + this.getBasicAuthHeader());
+            } else if (Constants.OAUTH.equals(auth.getAuthType()) || Constants.IDP.equals(auth.getAuthType())) {
+                getRequest.addHeader("Authorization", "Bearer " + auth.getAuthKey());
+                getRequest.addHeader("request-source", "gateway");
+            }
             CloseableHttpResponse response = httpClient.execute(getRequest);
-            logger.debug("Server returned with ResponseCode: {}", response.getStatusLine().getStatusCode());
+            int responseCode = response.getStatusLine().getStatusCode();
+            logger.debug("Server returned with ResponseCode: {}", responseCode);
+
+            if (responseCode == 401 && (Constants.OAUTH.equals(auth.getAuthType()) || Constants.IDP.equals(auth.getAuthType())) && !retried) {
+                logger.warn("Received 401 response, refreshing token and retrying...");
+                try {
+                    if (Constants.IDP.equals(auth.getAuthType())) {
+                        auth.refreshIDPOAuthToken();
+                    } else {
+                        auth.refreshOAuthKey();
+                    }
+                    retried = true;
+                    getRequest.removeHeaders("Authorization");
+                    getRequest.addHeader("Authorization", "Bearer " + auth.getAuthKey());
+                    response = httpClient.execute(getRequest);
+                    responseCode = response.getStatusLine().getStatusCode();
+                    logger.debug("Server returned with ResponseCode after retry: {}", responseCode);
+                } catch (Exception e) {
+                    logger.error("Failed to refresh token: {}", e.getMessage());
+                }
+            }
 
             HttpEntity entity = response.getEntity();
             if (entity != null) {
@@ -100,6 +134,10 @@ public class WASClient extends WASBaseClient {
                 String fileName = "downloaded.pdf"; // Default name
                 if (contentDisposition.contains("filename=")) {
                     fileName = contentDisposition.split("filename=")[1].trim().replace("\"", "");
+                    fileName = new File(fileName.replace('\\', '/')).getName();
+                    if (fileName.isEmpty() || fileName.equals(".") || fileName.equals("..")) {
+                        fileName = "downloaded.pdf";
+                    }
                     fileName = Helper.getCompleteFileName(fileName);
                 }
 
@@ -128,7 +166,12 @@ public class WASClient extends WASBaseClient {
                 JsonObject responseObject = response.response;
                 if (response.responseCode < 200 || response.responseCode > 299) {
                     String err_message = responseObject.has("errorMessage") ? "Error message: " + responseObject.get("errorMessage").getAsString() : "";
-                    throw new Exception("HTTP Response code from server: " + response.responseCode + ". " + err_message);
+                    if (response.responseCode == 401) {
+                        logger.error("HTTP Response code from server: 401. Authentication failed. Response: {}", responseObject.toString());
+                        throw new Exception("HTTP Response code from server: 401. Authentication failed. " + err_message);
+                    } else {
+                        throw new Exception("HTTP Response code from server: " + response.responseCode + ". " + err_message);
+                    }
                 }
                 JsonObject serviceResponseObject = responseObject.get("ServiceResponse").getAsJsonObject();
                 String responseCodeString = serviceResponseObject.get("responseCode").getAsString();
@@ -153,6 +196,10 @@ public class WASClient extends WASBaseClient {
         String status = null;
         try {
             QualysWASResponse statusResponse = getScanStatus(scanId);
+            if (statusResponse.errored || statusResponse.response == null) {
+                logger.error("Failed to fetch scan status for scanId: {}. Error: {}", scanId, statusResponse.errorMessage);
+                return null;
+            }
             JsonObject result = statusResponse.response;
             JsonElement resultElement = result.get("ServiceResponse");
             JsonObject responseObject = resultElement.getAsJsonObject();
@@ -193,6 +240,7 @@ public class WASClient extends WASBaseClient {
         QualysWASResponse apiResponse = new QualysWASResponse();
         String apiResponseString = "";
         CloseableHttpClient httpClient = null;
+        boolean retried = false;
 
         try {
             URL url = this.getAbsoluteUrl(apiPath);
@@ -201,10 +249,34 @@ public class WASClient extends WASBaseClient {
 
             HttpGet getRequest = new HttpGet(url.toString());
             getRequest.addHeader("accept", "application/json");
-            getRequest.addHeader("Authorization", "Basic " + this.getBasicAuthHeader());
+            if (Constants.BASIC.equals(auth.getAuthType())) {
+                getRequest.addHeader("Authorization", "Basic " + this.getBasicAuthHeader());
+            } else if (Constants.OAUTH.equals(auth.getAuthType()) || Constants.IDP.equals(auth.getAuthType())) {
+                getRequest.addHeader("Authorization", "Bearer " + auth.getAuthKey());
+                getRequest.addHeader("request-source", "gateway");
+            }
             CloseableHttpResponse response = httpClient.execute(getRequest);
             apiResponse.responseCode = response.getStatusLine().getStatusCode();
             logger.debug("Server returned with ResponseCode: " + apiResponse.responseCode);
+
+            if (apiResponse.responseCode == 401 && (Constants.OAUTH.equals(auth.getAuthType()) || Constants.IDP.equals(auth.getAuthType())) && !retried) {
+                logger.warn("Received 401 response, refreshing token and retrying...");
+                try {
+                    if (Constants.IDP.equals(auth.getAuthType())) {
+                        auth.refreshIDPOAuthToken();
+                    } else {
+                        auth.refreshOAuthKey();
+                    }
+                    retried = true;
+                    getRequest.removeHeaders("Authorization");
+                    getRequest.addHeader("Authorization", "Bearer " + auth.getAuthKey());
+                    response = httpClient.execute(getRequest);
+                    apiResponse.responseCode = response.getStatusLine().getStatusCode();
+                    logger.debug("Server returned with ResponseCode after retry: " + apiResponse.responseCode);
+                } catch (Exception e) {
+                    logger.error("Failed to refresh token: {}", e.getMessage());
+                }
+            }
 
             if (response.getEntity() != null) {
                 BufferedReader br = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
@@ -220,7 +292,6 @@ public class WASClient extends WASBaseClient {
                     throw new InvalidAPIResponseException();
                 }
                 apiResponse.response = jsonElement.getAsJsonObject();
-
             }
 
         } catch (JsonParseException je) {
@@ -238,6 +309,7 @@ public class WASClient extends WASBaseClient {
         QualysWASResponse response = new QualysWASResponse();
         String apiResponseString = "";
         CloseableHttpClient httpClient = null;
+        boolean retried = false;
         try {
             URL url = this.getAbsoluteUrl(apiPath);
             logger.info("Making Request: " + url.toString());
@@ -245,7 +317,12 @@ public class WASClient extends WASBaseClient {
 
             HttpPost postRequest = new HttpPost(url.toString());
             postRequest.addHeader("accept", "application/json");
-            postRequest.addHeader("Authorization", "Basic " + this.getBasicAuthHeader());
+            if (Constants.BASIC.equals(auth.getAuthType())) {
+                postRequest.addHeader("Authorization", "Basic " + this.getBasicAuthHeader());
+            } else if (Constants.OAUTH.equals(auth.getAuthType()) || Constants.IDP.equals(auth.getAuthType())) {
+                postRequest.addHeader("Authorization", "Bearer " + auth.getAuthKey());
+                postRequest.addHeader("request-source", "gateway");
+            }
             Gson gson = new Gson();
             if (requestData != null) {
                 postRequest.addHeader("Content-Type", "application/json");
@@ -256,6 +333,26 @@ public class WASClient extends WASBaseClient {
             CloseableHttpResponse httpResponse = httpClient.execute(postRequest);
             response.responseCode = httpResponse.getStatusLine().getStatusCode();
             logger.info("Server returned with ResponseCode: " + response.responseCode);
+
+            if (response.responseCode == 401 && (Constants.OAUTH.equals(auth.getAuthType()) || Constants.IDP.equals(auth.getAuthType())) && !retried) {
+                logger.warn("Received 401 response, refreshing token and retrying...");
+                try {
+                    if (Constants.IDP.equals(auth.getAuthType())) {
+                        auth.refreshIDPOAuthToken();
+                    } else {
+                        auth.refreshOAuthKey();
+                    }
+                    retried = true;
+                    postRequest.removeHeaders("Authorization");
+                    postRequest.addHeader("Authorization", "Bearer " + auth.getAuthKey());
+                    httpResponse = httpClient.execute(postRequest);
+                    response.responseCode = httpResponse.getStatusLine().getStatusCode();
+                    logger.info("Server returned with ResponseCode after retry: " + response.responseCode);
+                } catch (Exception e) {
+                    logger.error("Failed to refresh token: {}", e.getMessage());
+                }
+            }
+
             if (httpResponse.getEntity() != null) {
                 BufferedReader br = new BufferedReader(new InputStreamReader(httpResponse.getEntity().getContent()));
                 String output;
@@ -273,7 +370,7 @@ public class WASClient extends WASBaseClient {
             }
         } catch (Exception ex) {
             response.errored = true;
-            response.errorMessage = apiResponseString;
+            response.errorMessage = apiResponseString.isEmpty() ? ex.getMessage() : apiResponseString;
         }
 
         return response;

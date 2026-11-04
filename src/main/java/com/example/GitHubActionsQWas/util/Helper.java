@@ -58,6 +58,31 @@ public class Helper {
         }
     }
 
+    public static String normalizeUrl(String url) {
+        String normalized = url.trim();
+        while (normalized.endsWith("/")) {
+            normalized = normalized.substring(0, normalized.length() - 1);
+        }
+        return normalized;
+    }
+
+    public static String deriveGatewayUrl(String apiServer) {
+        if (apiServer.contains("qualysapi.qualys.com")) {
+            return apiServer.replace("qualysapi.qualys.com", "gateway.qg1.apps.qualys.com");
+        }
+        if (apiServer.contains("qualysapi.qualys.eu")) {
+            return apiServer.replace("qualysapi.qualys.eu", "gateway.qg1.apps.qualys.eu");
+        }
+        if (apiServer.contains("qualysapi.gov1.qualys.us") || apiServer.matches("(?i)https?://qualysapi\\.qg\\d+\\.apps\\..+")) {
+            return apiServer.replace("qualysapi.", "gateway.");
+        }
+        return apiServer.replace("qualysapi.", "qualysgateway.");
+    }
+
+    public static String derivePortalUrl(String apiServer) {
+        return apiServer.replace("qualysapi.", "qualysguard.");
+    }
+
     public static String getCompleteFileName(String fileName) {
         String filePath = Strings.EMPTY;
         String dirPath = "outputs";

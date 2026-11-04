@@ -45,6 +45,7 @@ public class QualysWASScanService {
     private JsonObject criteriaObject;
     private WASClient apiClient;
     private boolean failOnScanError;
+    private boolean sendMail;
 
     protected String launchScan() {
         JsonObject requestData = new JsonObject();
@@ -84,6 +85,10 @@ public class QualysWASScanService {
                 wasScan.addProperty("cancelAfterNHours", cancelHours);
             }
 
+            if (!sendMail) {
+                wasScan.addProperty("sendMail", false);
+            }
+
             wasScan.add("target", webApp);
             data.add("WasScan", wasScan);
             requestObj.add("data", data);
@@ -104,6 +109,9 @@ public class QualysWASScanService {
             }
 
             QualysWASResponse response = apiClient.launchWASScan(requestData);
+            if (response.errored || response.response == null) {
+                throw new Exception("Launch Scan API request failed. Response code: " + response.responseCode + ". Error: " + response.errorMessage);
+            }
             JsonObject result = response.response;
             //parse result
             JsonElement respEl = result.get("ServiceResponse");
