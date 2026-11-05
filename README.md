@@ -350,7 +350,7 @@ Note: The Parameter values given in the above table are case-sensitive.
 
 ## Security Recommendations
 
-- **Pin the action version.** Use a release tag Eg.(`Qualys/github-action-qwas@v2.1.0`) or a full commit SHA. The action builds and runs the code at the same ref you pin and what executes.
+- **Pin the action version.** Use a release tag Eg.(`Qualys/github-action-qwas@v2.0.0`) or a full commit SHA. The action builds and runs the code at the same ref you pin and what executes.
 - **Least privilege.** Set `permissions: contents: read` on the workflow or job. The action never writes to your repository.
 - **Store credentials as secrets.** `QUALYS_PASSWORD` and `CLIENT_SECRET` must be GitHub Secrets, not variables.
 - **Use HTTPS.** `API_SERVER` must start with `https://`; the action fails fast otherwise.
