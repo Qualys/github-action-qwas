@@ -357,7 +357,7 @@ Note: The Parameter values given in the above table are case-sensitive.
 
 ## Release Notes
 
-### v2.1.0
+### v2.0.0
 
 Security hardening release. Upgrading is recommended for all users; older tags (`v1.x`) continue to build from the `main` branch at run time and do not receive the fixes below.
 
